@@ -59,6 +59,8 @@ function doPost(e) {
         'NUMERO REGISTRO',
         'RESPONSABLE',
         'SEDE',
+        'FORMULA 1',
+        'FORMULA 2',
         'NUMERO DE LOTE'
       ];
   const colCount = ensureHeaderFull(sh, desiredHeader);
@@ -83,12 +85,14 @@ function doPost(e) {
             registro,
             responsable,
             sede,
+            '',
+            '',
             (it && it.lote) ? String(it.lote).trim() : ''
           ];
           rows.push(fitRow(r, writeCols));
         });
       } else {
-        let r = [marcaTemporal, direccionValor, fecha, '', 0, entregado, registro, responsable, sede, ''];
+        let r = [marcaTemporal, direccionValor, fecha, '', 0, entregado, registro, responsable, sede, '', '', ''];
         rows.push(fitRow(r, writeCols));
       }
 
