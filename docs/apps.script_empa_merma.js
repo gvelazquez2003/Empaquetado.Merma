@@ -354,6 +354,21 @@ function ensureHeaderFull(sh, desired){
   }
   try {
     sh.getRange(1,1,1,colCount).setValues([out]);
+    // Asegurar que no queden encabezados vacíos dentro del ancho total de la hoja (tablas requieren valor)
+    const maxCols = Math.max(sh.getMaxColumns(), colCount, desired.length, 1);
+    if (maxCols > colCount) {
+      const fullRow = sh.getRange(1,1,1,maxCols).getValues()[0];
+      let needsWrite = false;
+      for (let i=0;i<maxCols;i++){
+        if (!fullRow[i] || String(fullRow[i]).trim()==='') {
+          fullRow[i] = 'Col_'+(i+1);
+          needsWrite = true;
+        }
+      }
+      if (needsWrite) {
+        sh.getRange(1,1,1,maxCols).setValues([fullRow]);
+      }
+    }
     return colCount;
   } catch (err) {
     // Fallback: escribir encabezados hasta el máximo de columnas de la hoja
