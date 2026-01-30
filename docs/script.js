@@ -3,7 +3,7 @@
 // Si hay URL guardada en ajustes, úsala; si no, fallback a la fija:
 const WEB_APP_URL = (typeof localStorage !== 'undefined' && localStorage.getItem('WEB_APP_URL_DYNAMIC'))
     ? localStorage.getItem('WEB_APP_URL_DYNAMIC')
-    : "https://script.google.com/macros/s/AKfycbwZ3HM1tFv91fT5xSCdoJ0MUKy4zwkns0BIamRux9nU0rnQ2jLuWGtw-qnpV-NRzA1eXg/exec"; // URL por defecto (deployment actual)
+    : "https://script.google.com/macros/s/AKfycbw56a2rj7jkaqxxCgu60qlml09m8P7drE0PK218UeUd-Y1FqM27oslpv2hrpjKsPWAzQQ/exec"; // URL por defecto (deployment actual)
 
 // Endpoints por hoja (el Apps Script espera ?sheet=Empaquetado | ?sheet=Merma)
 const APPS_SCRIPT_URL_EMPAQUETADOS = WEB_APP_URL ? WEB_APP_URL + "?sheet=Empaquetado" : "";

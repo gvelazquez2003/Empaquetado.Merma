@@ -340,7 +340,7 @@ function hydrateProductos(productos, params){
 
 // Encabezado robusto: rellena vacíos y extiende hasta el total de columnas usadas por la hoja.
 function ensureHeaderFull(sh, desired){
-  const colCount = Math.max(sh.getLastColumn(), desired.length);
+  const colCount = Math.max(sh.getLastColumn(), desired.length, 1);
   const existing = colCount ? sh.getRange(1,1,1,colCount).getValues()[0] : [];
   const out = [];
   for (let i=0;i<colCount;i++){
@@ -348,8 +348,22 @@ function ensureHeaderFull(sh, desired){
     if (!val || String(val).trim()==='') val = 'Col_'+(i+1);
     out.push(val);
   }
-  sh.getRange(1,1,1,colCount).setValues([out]);
-  return colCount;
+  try {
+    sh.getRange(1,1,1,colCount).setValues([out]);
+    return colCount;
+  } catch (err) {
+    // Fallback: escribir encabezados hasta el máximo de columnas de la hoja
+    const maxCols = Math.max(sh.getMaxColumns(), colCount, desired.length, 1);
+    const existingAll = maxCols ? sh.getRange(1,1,1,maxCols).getValues()[0] : [];
+    const outAll = [];
+    for (let i=0;i<maxCols;i++){
+      let val = i < desired.length ? desired[i] : existingAll[i];
+      if (!val || String(val).trim()==='') val = 'Col_'+(i+1);
+      outAll.push(val);
+    }
+    sh.getRange(1,1,1,maxCols).setValues([outAll]);
+    return maxCols;
+  }
 }
 
 function respond(obj){
