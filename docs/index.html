@@ -25,6 +25,11 @@
                         <input type="text" id="empa-hora" name="hora" placeholder="Hora" readonly class="hora-input" />
                     </div>
                     <div class="field">
+                        <label for="empa-maquina">Máquina (##):</label>
+                        <input type="text" id="empa-maquina" name="maquina" inputmode="numeric" maxlength="2" placeholder="Ej: 01" />
+                        <input type="text" id="empa-lote-preview" placeholder="Lote: BCddmmaa##" readonly class="hora-input" style="width: 100%; margin-top: 6px;" />
+                    </div>
+                    <div class="field">
                         <label for="empa-entregado">Entregado a:</label>
                         <select id="empa-entregado" name="entregado" required class="select">
                             <option value="">Selecciona una opción</option>
@@ -138,7 +143,7 @@
     (function(){
         let PRODUCTOS_CACHE = [];
         function getBaseUrl(){
-            return (localStorage.getItem('WEB_APP_URL_DYNAMIC')||'').trim() || "https://script.google.com/macros/s/AKfycbw6K9RLQKfFC7X6OAfdawdx8C-ga7hD6Cme_E_0glZrflLuVVZZNR6DiSmjm7slU7V7FQ/exec";
+            return (localStorage.getItem('WEB_APP_URL_DYNAMIC')||'').trim() || "https://script.google.com/macros/s/AKfycbwZ3HM1tFv91fT5xSCdoJ0MUKy4zwkns0BIamRux9nU0rnQ2jLuWGtw-qnpV-NRzA1eXg/exec";
         }
         function opcionesMotivoHTML(){
             return `
@@ -220,10 +225,6 @@
             document.addEventListener('keydown', e=>{ if(e.key==='Escape') close(); });
             buscar.addEventListener('input', ()=>render(buscar.value));
             function addProducto(p){
-                if(!isMerma){
-                    const ya = contSel.querySelector(`.sel-row[data-codigo="${p.codigo}"] input.prod-qty`);
-                    if(ya){ ya.focus(); close(); return; }
-                }
                 const row = document.createElement('div');
                 row.className='sel-row producto-line';
                 row.dataset.codigo = p.codigo;
@@ -235,16 +236,51 @@
                             data-desc="${(p.desc||'').replace(/"/g,'&quot;')}"
                             data-unidad="${p.unidad}" name="qty_${p.codigo}">
                         ${isMerma ? `<select class="merma-motivo select" style="min-width:210px;">${opcionesMotivoHTML()}</select>
-                        <input type="text" class="merma-lote" placeholder="Lote" style="min-width:120px;"/>` : ''}
+                        <input type="text" class="merma-lote" placeholder="Lote" style="min-width:120px;"/>` : `<input type="text" class="empa-lote" placeholder="Lote" style="min-width:140px;"/>`}
                         <button type="button" class="remove-sel">✕</button>
                     </div>`;
                 row.innerHTML = baseInputs;
+                if(!isMerma){
+                    const loteInput = row.querySelector('.empa-lote');
+                    if(loteInput){
+                        const lote = buildEmpaLote();
+                        if(lote){ loteInput.value = lote; loteInput.dataset.auto = '1'; }
+                        loteInput.addEventListener('input', ()=>{ loteInput.dataset.auto = '0'; });
+                    }
+                }
                 row.querySelector('.remove-sel').addEventListener('click', ()=>row.remove());
                 contSel.appendChild(row);
                 row.querySelector('.prod-qty').focus();
                 close();
             }
             return { render, open, close, buscar };
+        }
+        function formatDateForLote(dateValue){
+            if(!dateValue) return '';
+            if(/^\d{4}-\d{2}-\d{2}$/.test(dateValue)){
+                const [y,m,d] = dateValue.split('-');
+                return `${d}${m}${y.slice(2)}`;
+            }
+            return dateValue.replace(/[^0-9]/g,'');
+        }
+        function buildEmpaLote(){
+            const fechaVal = document.getElementById('empa-fecha') ? document.getElementById('empa-fecha').value : '';
+            const maq = document.getElementById('empa-maquina') ? document.getElementById('empa-maquina').value.trim() : '';
+            const fecha = formatDateForLote(fechaVal);
+            if(!fecha) return '';
+            return `BC${fecha}${maq}`;
+        }
+        function updateEmpaLotes(){
+            const preview = document.getElementById('empa-lote-preview');
+            const lote = buildEmpaLote();
+            if(preview) preview.value = lote ? `Lote: ${lote}` : '';
+            const contSel = document.getElementById('empa-productos-seleccionados');
+            if(!contSel) return;
+            contSel.querySelectorAll('.empa-lote').forEach(input=>{
+                if(input.dataset.auto === '1' || !input.value){
+                    if(lote) { input.value = lote; input.dataset.auto = '1'; }
+                }
+            });
         }
         async function refreshPanels(){
             await cargarProductos();
@@ -288,6 +324,11 @@
             window.__empaPanel = initPanel('empa');
             window.__mermaPanel = initPanel('merma');
             await refreshPanels();
+            const fechaEmpa = document.getElementById('empa-fecha');
+            const maqEmpa = document.getElementById('empa-maquina');
+            if(fechaEmpa) fechaEmpa.addEventListener('change', updateEmpaLotes);
+            if(maqEmpa) maqEmpa.addEventListener('input', updateEmpaLotes);
+            updateEmpaLotes();
         });
     })();
     </script>

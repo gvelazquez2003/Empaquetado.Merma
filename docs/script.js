@@ -3,7 +3,7 @@
 // Si hay URL guardada en ajustes, úsala; si no, fallback a la fija:
 const WEB_APP_URL = (typeof localStorage !== 'undefined' && localStorage.getItem('WEB_APP_URL_DYNAMIC'))
     ? localStorage.getItem('WEB_APP_URL_DYNAMIC')
-    : "https://script.google.com/macros/s/AKfycbw6K9RLQKfFC7X6OAfdawdx8C-ga7hD6Cme_E_0glZrflLuVVZZNR6DiSmjm7slU7V7FQ/exec"; // URL por defecto (deployment actual)
+    : "https://script.google.com/macros/s/AKfycbwZ3HM1tFv91fT5xSCdoJ0MUKy4zwkns0BIamRux9nU0rnQ2jLuWGtw-qnpV-NRzA1eXg/exec"; // URL por defecto (deployment actual)
 
 // Endpoints por hoja (el Apps Script espera ?sheet=Empaquetado | ?sheet=Merma)
 const APPS_SCRIPT_URL_EMPAQUETADOS = WEB_APP_URL ? WEB_APP_URL + "?sheet=Empaquetado" : "";
@@ -65,7 +65,7 @@ function enviarFormulario(formId, url) {
                 if (!isNaN(val) && val > 0) {
                     const row = inp.closest('.producto-line');
                     const motivoEl = row ? row.querySelector('.merma-motivo') : null;
-                    const loteEl = row ? row.querySelector('.merma-lote') : null;
+                    const loteEl = row ? row.querySelector('.merma-lote, .empa-lote') : null;
                     // read motivo and lote robustly: prefer value, fallback to selected option text
                     var motivoVal = '';
                     if (motivoEl) {
@@ -94,6 +94,26 @@ function enviarFormulario(formId, url) {
                 }
             });
             seleccionados = seleccionadosTmp;
+            // Evitar duplicados de producto + lote
+            const dupMap = new Set();
+            let hasDup = false;
+            seleccionados.forEach(item => {
+                const codigo = (item.codigo || '').trim().toLowerCase();
+                const lote = (item.lote || '').trim().toLowerCase();
+                if (!codigo) return;
+                const key = codigo + '|' + lote;
+                if (dupMap.has(key)) hasDup = true;
+                else dupMap.add(key);
+            });
+            if (hasDup) {
+                if (msgEl) msgEl.textContent = "No se permite el mismo producto con el mismo número de lote.";
+                form.dataset.submitting = "0";
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = "Enviar";
+                }
+                return;
+            }
             if (seleccionados.length) {
                 datos.append('productos_json', JSON.stringify(seleccionados));
                 if (formId === "merma-form") {
