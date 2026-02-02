@@ -94,6 +94,19 @@ function enviarFormulario(formId, url) {
                 }
             });
             seleccionados = seleccionadosTmp;
+            // Validar motivo y lote en Merma
+            if (formId === "merma-form") {
+                const falta = seleccionados.find(it => !String(it.motivo || '').trim() || !String(it.lote || '').trim());
+                if (falta) {
+                    if (msgEl) msgEl.textContent = "Completa el motivo y el número de lote en todos los productos.";
+                    form.dataset.submitting = "0";
+                    if (submitBtn) {
+                        submitBtn.disabled = false;
+                        submitBtn.textContent = "Enviar";
+                    }
+                    return;
+                }
+            }
             // Evitar duplicados de producto + lote (en Merma permite repetir lote si el motivo es distinto)
             const dupMap = new Set();
             let hasDup = false;

@@ -183,21 +183,29 @@
             } catch(e){ PRODUCTOS_CACHE = []; }
             return PRODUCTOS_CACHE;
         }
+        function setFechaHoy(prefix){
+            const fecha = document.getElementById(prefix+'-fecha');
+            const hora = document.getElementById(prefix+'-hora');
+            if(!fecha) return;
+            const now = new Date();
+            const vz = new Date(now.toLocaleString('en-US',{timeZone:'America/Caracas'}));
+            const yyyy = vz.getFullYear();
+            const mm = String(vz.getMonth()+1).padStart(2,'0');
+            const dd = String(vz.getDate()).padStart(2,'0');
+            fecha.value = `${yyyy}-${mm}-${dd}`;
+            if(hora){
+                const hh = String(vz.getHours()).padStart(2,'0');
+                const min = String(vz.getMinutes()).padStart(2,'0');
+                hora.value = `${hh}:${min}`;
+            }
+        }
         function initFecha(prefix){
             const btn = document.getElementById(prefix+'-btn-fecha-hoy');
             const fecha = document.getElementById(prefix+'-fecha');
             const hora = document.getElementById(prefix+'-hora');
             if(!btn) return;
             btn.addEventListener('click', ()=>{
-                const now = new Date();
-                const vz = new Date(now.toLocaleString('en-US',{timeZone:'America/Caracas'}));
-                const yyyy = vz.getFullYear();
-                const mm = String(vz.getMonth()+1).padStart(2,'0');
-                const dd = String(vz.getDate()).padStart(2,'0');
-                fecha.value = `${yyyy}-${mm}-${dd}`;
-                const hh = String(vz.getHours()).padStart(2,'0');
-                const min = String(vz.getMinutes()).padStart(2,'0');
-                hora.value = `${hh}:${min}`;
+                setFechaHoy(prefix);
                 if(prefix === 'merma') updateMermaLotes();
                 if(prefix === 'empa') updateEmpaLotes();
             });
@@ -252,6 +260,11 @@
                         loteInput.addEventListener('input', ()=>{ loteInput.dataset.auto = '0'; });
                     }
                 } else {
+                    const fechaMerma = document.getElementById('merma-fecha');
+                    if(fechaMerma && !fechaMerma.value){
+                        setFechaHoy('merma');
+                    }
+                    updateMermaLotes();
                     const loteInput = row.querySelector('.merma-lote');
                     if(loteInput){
                         const lote = buildMermaLote();
