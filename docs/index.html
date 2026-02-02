@@ -198,6 +198,8 @@
                 const hh = String(vz.getHours()).padStart(2,'0');
                 const min = String(vz.getMinutes()).padStart(2,'0');
                 hora.value = `${hh}:${min}`;
+                if(prefix === 'merma') updateMermaLotes();
+                if(prefix === 'empa') updateEmpaLotes();
             });
         }
         function initPanel(prefix){
@@ -249,6 +251,13 @@
                         if(lote){ loteInput.value = lote; loteInput.dataset.auto = '1'; }
                         loteInput.addEventListener('input', ()=>{ loteInput.dataset.auto = '0'; });
                     }
+                } else {
+                    const loteInput = row.querySelector('.merma-lote');
+                    if(loteInput){
+                        const lote = buildMermaLote();
+                        if(lote){ loteInput.value = lote; loteInput.dataset.auto = '1'; }
+                        loteInput.addEventListener('input', ()=>{ loteInput.dataset.auto = '0'; });
+                    }
                 }
                 row.querySelector('.remove-sel').addEventListener('click', ()=>row.remove());
                 contSel.appendChild(row);
@@ -272,6 +281,12 @@
             if(!fecha) return '';
             return `BC${fecha}${maq}`;
         }
+        function buildMermaLote(){
+            const fechaVal = document.getElementById('merma-fecha') ? document.getElementById('merma-fecha').value : '';
+            const fecha = formatDateForLote(fechaVal);
+            if(!fecha) return '';
+            return `BC${fecha}`;
+        }
         function updateEmpaLotes(){
             const preview = document.getElementById('empa-lote-preview');
             const lote = buildEmpaLote();
@@ -279,6 +294,16 @@
             const contSel = document.getElementById('empa-productos-seleccionados');
             if(!contSel) return;
             contSel.querySelectorAll('.empa-lote').forEach(input=>{
+                if(input.dataset.auto === '1' || !input.value){
+                    if(lote) { input.value = lote; input.dataset.auto = '1'; }
+                }
+            });
+        }
+        function updateMermaLotes(){
+            const lote = buildMermaLote();
+            const contSel = document.getElementById('merma-productos-seleccionados');
+            if(!contSel) return;
+            contSel.querySelectorAll('.merma-lote').forEach(input=>{
                 if(input.dataset.auto === '1' || !input.value){
                     if(lote) { input.value = lote; input.dataset.auto = '1'; }
                 }
@@ -328,9 +353,12 @@
             await refreshPanels();
             const fechaEmpa = document.getElementById('empa-fecha');
             const maqEmpa = document.getElementById('empa-maquina');
+            const fechaMerma = document.getElementById('merma-fecha');
             if(fechaEmpa) fechaEmpa.addEventListener('change', updateEmpaLotes);
             if(maqEmpa) maqEmpa.addEventListener('input', updateEmpaLotes);
+            if(fechaMerma) fechaMerma.addEventListener('change', updateMermaLotes);
             updateEmpaLotes();
+            updateMermaLotes();
         });
     })();
     </script>

@@ -94,19 +94,23 @@ function enviarFormulario(formId, url) {
                 }
             });
             seleccionados = seleccionadosTmp;
-            // Evitar duplicados de producto + lote
+            // Evitar duplicados de producto + lote (en Merma permite repetir lote si el motivo es distinto)
             const dupMap = new Set();
             let hasDup = false;
+            const isMermaForm = formId === "merma-form";
             seleccionados.forEach(item => {
                 const codigo = (item.codigo || '').trim().toLowerCase();
                 const lote = (item.lote || '').trim().toLowerCase();
+                const motivo = (item.motivo || '').trim().toLowerCase();
                 if (!codigo) return;
-                const key = codigo + '|' + lote;
+                const key = isMermaForm ? (codigo + '|' + lote + '|' + motivo) : (codigo + '|' + lote);
                 if (dupMap.has(key)) hasDup = true;
                 else dupMap.add(key);
             });
             if (hasDup) {
-                if (msgEl) msgEl.textContent = "No se permite el mismo producto con el mismo número de lote.";
+                if (msgEl) msgEl.textContent = isMermaForm
+                    ? "No se permite el mismo producto con el mismo lote y motivo."
+                    : "No se permite el mismo producto con el mismo número de lote.";
                 form.dataset.submitting = "0";
                 if (submitBtn) {
                     submitBtn.disabled = false;
