@@ -163,7 +163,7 @@ function doPost(e) {
       var colsToWrite = writeCols || (rows[0] ? rows[0].length : 1);
   try { console.log('Writing rows count:', rows.length, 'cols:', colsToWrite); } catch(_) {}
   try { console.log('MERMA rows to write:', JSON.stringify(rows)); } catch(_) {}
-  sh.getRange(sh.getLastRow() + 1, 1, rows.length, colsToWrite).setValues(rows);
+  writeRowsSafe(sh, sh.getLastRow() + 1, 1, rows, colsToWrite, 'write_main_'+sheetKey);
       if (sheetKey === 'Empaquetado' && entradasRows.length) {
         let entradasSheet = ss.getSheetByName('Entradas09');
         if (!entradasSheet) {
@@ -175,7 +175,7 @@ function doPost(e) {
           'CANTIDAD EMPAQUETADO',
           'FECHA EMPAQUETADO'
         ]);
-        entradasSheet.getRange(entradasSheet.getLastRow() + 1, 1, entradasRows.length, 4).setValues(entradasRows);
+        writeRowsSafe(entradasSheet, entradasSheet.getLastRow() + 1, 1, entradasRows, 4, 'write_entradas09');
       }
       if (nonce) storeNonce(nonce);
     }
@@ -374,7 +374,17 @@ function ensureHeaderFull(sh, desired){
     out.push(val);
   }
   try {
-    sh.getRange(1,1,1,colCount).setValues([out]);
+    try {
+      sh.getRange(1,1,1,colCount).setValues([out]);
+    } catch (err) {
+      const msg = String(err && err.message || err);
+      if (msg && msg.indexOf('encabezado') !== -1) {
+        tryFixTables(sh);
+        sh.getRange(1,1,1,colCount).setValues([out]);
+      } else {
+        throw err;
+      }
+    }
     // Asegurar que no queden encabezados vacíos dentro del ancho total de la hoja (tablas requieren valor)
     const maxCols = Math.max(sh.getMaxColumns(), colCount, desired.length, 1);
     if (maxCols > colCount) {
@@ -387,7 +397,17 @@ function ensureHeaderFull(sh, desired){
         }
       }
       if (needsWrite) {
-        sh.getRange(1,1,1,maxCols).setValues([fullRow]);
+        try {
+          sh.getRange(1,1,1,maxCols).setValues([fullRow]);
+        } catch (err) {
+          const msg = String(err && err.message || err);
+          if (msg && msg.indexOf('encabezado') !== -1) {
+            tryFixTables(sh);
+            sh.getRange(1,1,1,maxCols).setValues([fullRow]);
+          } else {
+            throw err;
+          }
+        }
       }
     }
     ensureTableHeaders(sh);
@@ -402,7 +422,17 @@ function ensureHeaderFull(sh, desired){
       if (!val || String(val).trim()==='') val = 'Col_'+(i+1);
       outAll.push(val);
     }
-    sh.getRange(1,1,1,maxCols).setValues([outAll]);
+    try {
+      sh.getRange(1,1,1,maxCols).setValues([outAll]);
+    } catch (err2) {
+      const msg2 = String(err2 && err2.message || err2);
+      if (msg2 && msg2.indexOf('encabezado') !== -1) {
+        tryFixTables(sh);
+        sh.getRange(1,1,1,maxCols).setValues([outAll]);
+      } else {
+        throw err2;
+      }
+    }
     ensureTableHeaders(sh);
     return maxCols;
   }
@@ -486,7 +516,17 @@ function ensureHeaderPrefixFull(sh, headers){
     if (!val || String(val).trim()==='') val = 'Col_'+(i+1);
     out.push(val);
   }
-  sh.getRange(1,1,1,colCount).setValues([out]);
+  try {
+    sh.getRange(1,1,1,colCount).setValues([out]);
+  } catch (err) {
+    const msg = String(err && err.message || err);
+    if (msg && msg.indexOf('encabezado') !== -1) {
+      tryFixTables(sh);
+      sh.getRange(1,1,1,colCount).setValues([out]);
+    } else {
+      throw err;
+    }
+  }
   ensureTableHeaders(sh);
 }
 
@@ -520,5 +560,33 @@ function ensureTableHeaders(sh){
         if (changed) headerRange.setValues(values);
       } catch(_){ }
     });
+  } catch(_){ }
+}
+
+function writeRowsSafe(sh, startRow, startCol, rows, colCount, label){
+  try {
+    sh.getRange(startRow, startCol, rows.length, colCount).setValues(rows);
+  } catch (err) {
+    const msg = String(err && err.message || err);
+    if (msg && msg.indexOf('encabezado') !== -1) {
+      tryFixTables(sh);
+      sh.getRange(startRow, startCol, rows.length, colCount).setValues(rows);
+      return;
+    }
+    throw new Error(label + ': ' + msg);
+  }
+}
+
+function tryFixTables(sh){
+  try { ensureTableHeaders(sh); } catch(_){ }
+  try {
+    if (typeof sh.getTables === 'function') {
+      const tables = sh.getTables();
+      if (tables && tables.length) {
+        tables.forEach(t => {
+          try { if (typeof t.remove === 'function') t.remove(); } catch(_){ }
+        });
+      }
+    }
   } catch(_){ }
 }
