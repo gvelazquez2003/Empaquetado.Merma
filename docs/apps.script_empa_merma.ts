@@ -352,6 +352,7 @@ function ensureHeaderFull(sh, desired){
     out.push(val);
   }
   sh.getRange(1,1,1,colCount).setValues([out]);
+  ensureTableHeaders(sh);
   return colCount;
 }
 
@@ -434,4 +435,33 @@ function ensureHeaderPrefixFull(sh, headers){
     out.push(val);
   }
   sh.getRange(1,1,1,colCount).setValues([out]);
+  ensureTableHeaders(sh);
+}
+
+// Rellena encabezados vacíos dentro de tablas (si existen)
+function ensureTableHeaders(sh){
+  try {
+    if (typeof sh.getTables !== 'function') return;
+    const tables = sh.getTables();
+    if (!tables || !tables.length) return;
+    tables.forEach(t => {
+      try {
+        const headerRange = (typeof t.getHeaderRange === 'function')
+          ? t.getHeaderRange()
+          : (typeof t.getHeaderRowRange === 'function' ? t.getHeaderRowRange() : null);
+        if (!headerRange) return;
+        const values = headerRange.getValues();
+        let changed = false;
+        for (let r=0;r<values.length;r++){
+          for (let c=0;c<values[r].length;c++){
+            if (!values[r][c] || String(values[r][c]).trim()==='') {
+              values[r][c] = 'Col_'+(c+1);
+              changed = true;
+            }
+          }
+        }
+        if (changed) headerRange.setValues(values);
+      } catch(_){ }
+    });
+  } catch(_){ }
 }
