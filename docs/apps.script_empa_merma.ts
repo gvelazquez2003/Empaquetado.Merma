@@ -41,6 +41,7 @@ function doPost(e) {
     const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
     const sh = ss.getSheetByName(sheetName);
     if (!sh) return respond({ ok:false, error:'No existe la pestaña: '+sheetName });
+    tryFixTables(sh);
 
     const productos = parseProductos(params.productos_json);
     const marcaTemporal = Utilities.formatDate(new Date(), TZ, 'yyyy-MM-dd HH:mm:ss');
@@ -169,6 +170,7 @@ function doPost(e) {
         if (!entradasSheet) {
           entradasSheet = ss.insertSheet('Entradas09');
         }
+        tryFixTables(entradasSheet);
         ensureHeaderPrefixFull(entradasSheet, [
           'NUMERO DE LOTE',
           'PRODUCTO',
@@ -182,7 +184,23 @@ function doPost(e) {
 
     return respond({ ok:true, inserted: rows.length, nonce });
   } catch(err) {
-    return respond({ ok:false, error:String(err && err.message || err) });
+    const msg = String(err && (err as any).message || err);
+    if (msg.indexOf('encabezado') !== -1) {
+      try {
+        const ssDbg = SpreadsheetApp.openById(SPREADSHEET_ID);
+        const shEmp = ssDbg.getSheetByName('EMPAQUETADO');
+        const shEnt = ssDbg.getSheetByName('Entradas09');
+        return respond({
+          ok:false,
+          error: msg,
+          debug: {
+            empaquetado: shEmp ? getSheetDebug_(shEmp) : null,
+            entradas09: shEnt ? getSheetDebug_(shEnt) : null
+          }
+        });
+      } catch(_){ }
+    }
+    return respond({ ok:false, error: msg });
   } finally {
     try { lock.releaseLock(); } catch(_) {}
   }
@@ -369,6 +387,42 @@ function ensureHeaderFull(sh, desired){
 function respond(obj){
   return ContentService.createTextOutput(JSON.stringify(obj))
     .setMimeType(ContentService.MimeType.JSON);
+}
+
+function getSheetDebug_(sh){
+  const info:any = {
+    name: sh.getName(),
+    lastRow: sh.getLastRow(),
+    lastCol: sh.getLastColumn(),
+    maxCols: sh.getMaxColumns(),
+    tables: []
+  };
+  try {
+    if (typeof (sh as any).getTables === 'function') {
+      const tables = (sh as any).getTables();
+      tables.forEach(t => {
+        let hr = (typeof (t as any).getHeaderRange === 'function')
+          ? (t as any).getHeaderRange()
+          : (typeof (t as any).getHeaderRowRange === 'function' ? (t as any).getHeaderRowRange() : null);
+        if (!hr && typeof (t as any).getRange === 'function') {
+          const tr = (t as any).getRange();
+          hr = sh.getRange(tr.getRow(), tr.getColumn(), 1, tr.getNumColumns());
+        }
+        const rowVals = hr ? hr.getValues()[0] : null;
+        info.tables.push({
+          headerRow: hr ? hr.getRow() : null,
+          headerCol: hr ? hr.getColumn() : null,
+          headerNumCols: hr ? hr.getNumColumns() : null,
+          headerValues: rowVals
+        });
+      });
+    } else {
+      info.tables = null;
+    }
+  } catch (e) {
+    info.tablesError = String(e && (e as any).message || e);
+  }
+  return info;
 }
 
 // Adjustments to handle dynamic motivo and lote per product in MERMA
