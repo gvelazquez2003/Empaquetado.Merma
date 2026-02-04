@@ -41,7 +41,8 @@ function doPost(e) {
     const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
     const sh = ss.getSheetByName(sheetName);
     if (!sh) return respond({ ok:false, error:'No existe la pestaña: '+sheetName });
-    tryFixTables(sh);
+    // Mantener tablas pero asegurar encabezados válidos
+    normalizeTables(sh, null);
 
     const productos = hydrateProductos(parseProductos(params.productos_json), params);
     const marcaTemporal = Utilities.formatDate(new Date(), TZ, 'yyyy-MM-dd HH:mm:ss');
@@ -50,7 +51,7 @@ function doPost(e) {
   let entradasRows = [];
   var writeCols = null; // will hold the number of columns to write (ensures Merma uses colCount)
 
-    if (sheetKey === 'Empaquetado') {
+      if (sheetKey === 'Empaquetado') {
       const desiredHeader = [
         'Marca temporal',
         'DIRECCION',
@@ -66,6 +67,7 @@ function doPost(e) {
         'NUMERO DE LOTE'
       ];
   const colCount = ensureHeaderFull(sh, desiredHeader);
+  normalizeTables(sh, desiredHeader);
   writeCols = desiredHeader.length;
 
       const fecha = params.fecha || '';
@@ -92,18 +94,20 @@ function doPost(e) {
             (it && it.lote) ? String(it.lote).trim() : ''
           ];
           rows.push(fitRow(r, writeCols));
-          entradasRows.push([
-            (it && it.lote) ? String(it.lote).trim() : '',
-            it.descripcion || it.codigo || '',
-            toNumber(it.cantidad),
-            fecha
-          ]);
         });
       } else {
         let r = [marcaTemporal, direccionValor, fecha, '', 0, entregado, registro, responsable, sede, '', '', ''];
         rows.push(fitRow(r, writeCols));
-        entradasRows.push(['', '', 0, fecha]);
       }
+
+      // Construir Entradas09 desde las filas ya armadas (mismo dato que EMPAQUETADO)
+      entradasRows = rows.map(r => {
+        const loteVal = r[11] || '';
+        const prodVal = r[3] || '';
+        const cantVal = toNumber(r[4]);
+        const fechaVal = r[2] || '';
+        return [loteVal, prodVal, cantVal, fechaVal];
+      });
 
     } else if (sheetKey === 'Merma') {
       const desiredHeader = [
@@ -170,7 +174,14 @@ function doPost(e) {
         if (!entradasSheet) {
           entradasSheet = ss.insertSheet('Entradas09');
         }
-        tryFixTables(entradasSheet);
+        normalizeTables(entradasSheet, [
+          'NUMERO DE LOTE',
+          'PRODUCTO',
+          'CANTIDAD EMPAQUETADO',
+          'FECHA EMPAQUETADO',
+          'CANTIDAD ALMACEN',
+          'FECHA ENTRADA'
+        ]);
         ensureHeaderPrefixFull(entradasSheet, [
           'NUMERO DE LOTE',
           'PRODUCTO',
@@ -623,7 +634,7 @@ function writeRowsSafe(sh, startRow, startCol, rows, colCount, label){
   } catch (err) {
     const msg = String(err && err.message || err);
     if (msg && msg.indexOf('encabezado') !== -1) {
-      tryFixTables(sh);
+      normalizeTables(sh, null);
       sh.getRange(startRow, startCol, rows.length, colCount).setValues(rows);
       return;
     }
@@ -632,15 +643,29 @@ function writeRowsSafe(sh, startRow, startCol, rows, colCount, label){
 }
 
 function tryFixTables(sh){
-  try { ensureTableHeaders(sh); } catch(_){ }
+  try { normalizeTables(sh, null); } catch(_){ }
+}
+
+function normalizeTables(sh, preferredHeaders){
   try {
-    if (typeof sh.getTables === 'function') {
-      const tables = sh.getTables();
-      if (tables && tables.length) {
-        tables.forEach(t => {
-          try { if (typeof t.remove === 'function') t.remove(); } catch(_){ }
-        });
-      }
-    }
+    if (typeof sh.getTables !== 'function') return;
+    const tables = sh.getTables();
+    if (!tables || !tables.length) return;
+    tables.forEach(t => {
+      try {
+        const tr = t.getRange();
+        const headerRow = tr.getRow();
+        const headerCol = tr.getColumn();
+        const numCols = tr.getNumColumns();
+        const headerRange = sh.getRange(headerRow, headerCol, 1, numCols);
+        const values = headerRange.getValues()[0];
+        for (let c=0;c<numCols;c++){
+          let val = (preferredHeaders && c < preferredHeaders.length) ? preferredHeaders[c] : values[c];
+          if (!val || String(val).trim()==='') val = 'Col_'+(headerCol + c);
+          values[c] = val;
+        }
+        headerRange.setValues([values]);
+      } catch(_){ }
+    });
   } catch(_){ }
 }
