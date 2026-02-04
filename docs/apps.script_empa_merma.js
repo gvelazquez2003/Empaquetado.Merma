@@ -498,16 +498,21 @@ function ensureTableHeaders(sh){
     if (!tables || !tables.length) return;
     tables.forEach(t => {
       try {
-        const headerRange = (typeof t.getHeaderRange === 'function')
+        let headerRange = (typeof t.getHeaderRange === 'function')
           ? t.getHeaderRange()
           : (typeof t.getHeaderRowRange === 'function' ? t.getHeaderRowRange() : null);
+        if (!headerRange && typeof t.getRange === 'function') {
+          const tr = t.getRange();
+          headerRange = sh.getRange(tr.getRow(), tr.getColumn(), 1, tr.getNumColumns());
+        }
         if (!headerRange) return;
         const values = headerRange.getValues();
+        const startCol = headerRange.getColumn();
         let changed = false;
         for (let r=0;r<values.length;r++){
           for (let c=0;c<values[r].length;c++){
             if (!values[r][c] || String(values[r][c]).trim()==='') {
-              values[r][c] = 'Col_'+(c+1);
+              values[r][c] = 'Col_'+(startCol + c);
               changed = true;
             }
           }
