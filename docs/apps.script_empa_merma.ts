@@ -169,7 +169,7 @@ function doPost(e) {
         if (!entradasSheet) {
           entradasSheet = ss.insertSheet('Entradas09');
         }
-        ensureHeaderExact(entradasSheet, [
+        ensureHeaderPrefixFull(entradasSheet, [
           'NUMERO DE LOTE',
           'PRODUCTO',
           'CANTIDAD EMPAQUETADO',
@@ -423,16 +423,15 @@ function postMerma_(payload) {
   }
 }
 
-// Encabezado exacto para hojas de 4 columnas
-function ensureHeaderExact(sh, headers){
-  const colCount = headers.length;
+// Encabezado completo: fija A:D y rellena el resto para evitar celdas vacías en tablas
+function ensureHeaderPrefixFull(sh, headers){
+  const colCount = Math.max(sh.getLastColumn(), sh.getMaxColumns(), headers.length, 1);
   const existing = sh.getRange(1,1,1,colCount).getValues()[0];
-  let needsWrite = false;
+  const out = [];
   for (let i=0;i<colCount;i++){
-    if (String(existing[i] || '').trim() !== headers[i]) {
-      needsWrite = true;
-      break;
-    }
+    let val = i < headers.length ? headers[i] : existing[i];
+    if (!val || String(val).trim()==='') val = 'Col_'+(i+1);
+    out.push(val);
   }
-  if (needsWrite) sh.getRange(1,1,1,colCount).setValues([headers]);
+  sh.getRange(1,1,1,colCount).setValues([out]);
 }
