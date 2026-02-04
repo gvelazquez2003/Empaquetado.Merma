@@ -46,6 +46,7 @@ function doPost(e) {
     const marcaTemporal = Utilities.formatDate(new Date(), TZ, 'yyyy-MM-dd HH:mm:ss');
 
   let rows = [];
+  let entradasRows = [];
   var writeCols = null; // will hold the number of columns to write (ensures Merma uses colCount)
 
     if (sheetKey === 'Empaquetado') {
@@ -87,11 +88,18 @@ function doPost(e) {
             while (r.length < colCount) r.push('.');
           }
           rows.push(r);
+          entradasRows.push([
+            (it && it.lote) ? String(it.lote).trim() : '',
+            it.descripcion || it.codigo || '',
+            toNumber(it.cantidad),
+            fecha
+          ]);
         });
       } else {
         let r = [marcaTemporal, direccionValor, fecha, '', 0, entregado, registro, responsable, sede];
         while (r.length < colCount) r.push('.');
         rows.push(r);
+        entradasRows.push(['', '', 0, fecha]);
       }
 
     } else if (sheetKey === 'Merma') {
@@ -156,6 +164,19 @@ function doPost(e) {
   try { console.log('Writing rows count:', rows.length, 'cols:', colsToWrite); } catch(_) {}
   try { console.log('MERMA rows to write:', JSON.stringify(rows)); } catch(_) {}
   sh.getRange(sh.getLastRow() + 1, 1, rows.length, colsToWrite).setValues(rows);
+      if (sheetKey === 'Empaquetado' && entradasRows.length) {
+        let entradasSheet = ss.getSheetByName('Entradas09');
+        if (!entradasSheet) {
+          entradasSheet = ss.insertSheet('Entradas09');
+        }
+        ensureHeaderExact(entradasSheet, [
+          'NUMERO DE LOTE',
+          'PRODUCTO',
+          'CANTIDAD EMPAQUETADO',
+          'FECHA EMPAQUETADO'
+        ]);
+        entradasSheet.getRange(entradasSheet.getLastRow() + 1, 1, entradasRows.length, 4).setValues(entradasRows);
+      }
       if (nonce) storeNonce(nonce);
     }
 
@@ -400,4 +421,18 @@ function postMerma_(payload) {
   } finally {
     try { lock.releaseLock(); } catch (_) {}
   }
+}
+
+// Encabezado exacto para hojas de 4 columnas
+function ensureHeaderExact(sh, headers){
+  const colCount = headers.length;
+  const existing = sh.getRange(1,1,1,colCount).getValues()[0];
+  let needsWrite = false;
+  for (let i=0;i<colCount;i++){
+    if (String(existing[i] || '').trim() !== headers[i]) {
+      needsWrite = true;
+      break;
+    }
+  }
+  if (needsWrite) sh.getRange(1,1,1,colCount).setValues([headers]);
 }
