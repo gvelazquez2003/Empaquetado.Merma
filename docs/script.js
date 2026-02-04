@@ -202,7 +202,18 @@ function enviarFormulario(formId, url) {
                 if (!errorMsg && !parsed && response.status !== 200) {
                     errorMsg = 'HTTP '+response.status+' sin detalle del servidor.';
                 }
-                if (msgEl) msgEl.textContent = "Error al enviar el formulario. " + (errorMsg ? ("Detalle: "+ errorMsg) : "Puedes reintentar.");
+                let debugMsg = '';
+                try {
+                    if (parsed && parsed.debug) {
+                        const d = parsed.debug;
+                        const ent = d.entradas09;
+                        const emp = d.empaquetado;
+                        const entInfo = ent ? `Entradas09: lastCol=${ent.lastCol}, maxCols=${ent.maxCols}, tablas=${Array.isArray(ent.tables)?ent.tables.length:'?'}; ` : '';
+                        const empInfo = emp ? `Empaquetado: lastCol=${emp.lastCol}, maxCols=${emp.maxCols}, tablas=${Array.isArray(emp.tables)?emp.tables.length:'?'}; ` : '';
+                        debugMsg = entInfo || empInfo ? (` Diagnóstico: ${entInfo}${empInfo}`) : '';
+                    }
+                } catch(_){ }
+                if (msgEl) msgEl.textContent = "Error al enviar el formulario. " + (errorMsg ? ("Detalle: "+ errorMsg) : "Puedes reintentar.") + debugMsg;
             }
         })
         .catch(error => {
