@@ -75,10 +75,12 @@ function doPost(e) {
       const registro = params.registro || '';
       const responsable = params.responsable || '';
       const sede = params.sede || params.empresa || '';
+      const loteGlobal = (params.lote || '').trim();
       const direccionValor = '.'; // punto para evitar celda vacía
 
       if (productos.length) {
         productos.forEach(it => {
+          const loteItem = (it && it.lote) ? String(it.lote).trim() : loteGlobal;
           let r = [
             marcaTemporal,
             direccionValor,
@@ -91,7 +93,7 @@ function doPost(e) {
             sede,
             '',
             '',
-            (it && it.lote) ? String(it.lote).trim() : ''
+            loteItem || ''
           ];
           rows.push(fitRow(r, writeCols));
         });

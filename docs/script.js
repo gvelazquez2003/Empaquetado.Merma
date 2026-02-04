@@ -3,7 +3,7 @@
 // Si hay URL guardada en ajustes, úsala; si no, fallback a la fija:
 const WEB_APP_URL = (typeof localStorage !== 'undefined' && localStorage.getItem('WEB_APP_URL_DYNAMIC'))
     ? localStorage.getItem('WEB_APP_URL_DYNAMIC')
-    : "https://script.google.com/macros/s/AKfycbzNV7Uf9ezdwSu3vlpLoTwLTvvydG_8aUqERj8YWlfG88cgcCmgYyEuFNY_wyzdn27bvw/exec"; // URL por defecto (deployment actual)
+    : "https://script.google.com/macros/s/AKfycbyNV-0aAlvp3TTfnfiBhGvBeuzlMkSZKl0dOWRkKR8-jBLcmaPs2bnNuF4lYu9k2Yneuw/exec"; // URL por defecto (deployment actual)
 
 // Endpoints por hoja (el Apps Script espera ?sheet=Empaquetado | ?sheet=Merma)
 const APPS_SCRIPT_URL_EMPAQUETADOS = WEB_APP_URL ? WEB_APP_URL + "?sheet=Empaquetado" : "";
@@ -38,6 +38,27 @@ function enviarFormulario(formId, url) {
         const msgEl = document.getElementById("mensaje");
         if (msgEl) msgEl.textContent = "Enviando...";
         const datos = new FormData(form);
+        // Lote global para Empaquetado (respaldo si el lote por producto está vacío)
+        let loteGlobal = '';
+        if (formId === "empaquetados-form") {
+            try {
+                const preview = document.getElementById('empa-lote-preview');
+                if (preview && preview.value) {
+                    loteGlobal = String(preview.value).replace(/^Lote:\s*/i, '').trim();
+                }
+                if (!loteGlobal) {
+                    const fechaInput = document.getElementById('empa-fecha');
+                    const maqInput = document.getElementById('empa-maquina');
+                    const raw = fechaInput ? (fechaInput.value||'').trim() : '';
+                    const maq = maqInput ? (maqInput.value||'').trim() : '';
+                    if (/^\d{4}-\d{2}-\d{2}$/.test(raw)) {
+                        const [y,m,d] = raw.split('-');
+                        loteGlobal = `BC${d}${m}${y.slice(2)}${maq}`;
+                    }
+                }
+                if (loteGlobal) datos.append('lote', loteGlobal);
+            } catch(_) { /* no-op */ }
+        }
         const qtyInputs = form.querySelectorAll('.prod-qty');
         let seleccionados = [];
         // Formatear fecha a dd-mm-aaaa si viene como yyyy-mm-dd
@@ -83,6 +104,7 @@ function enviarFormulario(formId, url) {
                     if (loteEl) {
                         try { loteVal = (loteEl.value || '').toString().trim(); } catch(_) { loteVal = ''; }
                     }
+                    if (!loteVal && loteGlobal) loteVal = loteGlobal;
                     seleccionadosTmp.push({
                         codigo: inp.dataset.codigo,
                         descripcion: inp.dataset.desc || '',
