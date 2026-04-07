@@ -404,6 +404,275 @@ table.tabla-productos tbody tr:nth-child(odd){ background:#1f2336; }
 table.tabla-productos tbody tr:hover { background:#313954; }
 .estado-carga { margin-top:12px; font-size:0.8rem; color:#bfc8e2; }
 
+/* ====== PDT Theme parity with PruebaEmpaqFront (Menu + Merma) ====== */
+:root {
+    --pdt-negro: #000000;
+    --pdt-crema: #F8F3E9;
+    --pdt-tostado: #C06E32;
+    --pdt-tostado-claro: #d4824a;
+    --pdt-tostado-oscuro: #9e5528;
+    --pdt-vainilla: #fffdf8;
+}
+
+.pdt-logo-corner {
+    position: fixed;
+    top: 18px;
+    left: 18px;
+    width: 92px;
+    height: 92px;
+    object-fit: contain;
+    border-radius: 50%;
+    background: #ffffff;
+    border: 2px solid rgba(192, 110, 50, 0.42);
+    box-shadow:
+        0 1px 0 rgba(255, 255, 255, 0.85) inset,
+        0 12px 28px rgba(62, 42, 22, 0.18),
+        0 0 0 1px rgba(0, 0, 0, 0.06);
+    z-index: 120;
+}
+
+body.menu-screen,
+body.forms-screen {
+    background-color: var(--pdt-crema);
+    color: var(--pdt-negro);
+}
+
+body.menu-screen {
+    background-image:
+        radial-gradient(ellipse 100% 55% at 50% -8%, rgba(192, 110, 50, 0.14), transparent 58%),
+        radial-gradient(ellipse 70% 45% at 100% 100%, rgba(192, 110, 50, 0.08), transparent 50%),
+        linear-gradient(165deg, rgba(248,243,233,0.82) 0%, rgba(248,243,233,0.92) 45%, rgba(245,236,220,0.94) 100%);
+}
+
+body.menu-screen .menu-page {
+    width: min(1040px, 94vw);
+    max-width: none;
+    margin: 12px auto 0;
+    padding: 26px 0 130px;
+}
+
+body.menu-screen .menu-page h1 {
+    margin: 0 0 10px;
+    text-align: center;
+    font-size: clamp(2rem, 3.1vw, 2.8rem);
+    font-family: 'Arial Black', Arial, sans-serif;
+    color: var(--pdt-negro);
+    letter-spacing: -0.02em;
+    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5);
+}
+
+body.menu-screen .bienvenida {
+    margin: 0 auto 24px;
+    max-width: 28em;
+    text-align: center;
+    font-size: 1.05rem;
+    line-height: 1.45;
+    color: rgba(0, 0, 0, 0.78);
+    font-weight: 600;
+}
+
+body.menu-screen .menu-buttons-horizontal {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px;
+    margin-top: 0;
+}
+
+body.menu-screen .menu-btn {
+    width: 100%;
+    min-height: 170px;
+    height: auto;
+    border-radius: 28px;
+    font-size: clamp(1.8rem, 2.6vw, 2.2rem);
+    font-weight: 800;
+    letter-spacing: 0.3px;
+    color: var(--pdt-vainilla);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    background:
+        linear-gradient(145deg, rgba(255, 255, 255, 0.12) 0%, transparent 42%),
+        linear-gradient(165deg, var(--pdt-tostado-claro) 0%, var(--pdt-tostado) 38%, var(--pdt-tostado-oscuro) 100%);
+    box-shadow:
+        0 1px 0 rgba(255, 255, 255, 0.18) inset,
+        0 14px 32px rgba(80, 42, 18, 0.35),
+        0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+body.menu-screen .menu-btn:hover {
+    transform: translateY(-3px);
+    box-shadow:
+        0 1px 0 rgba(255, 255, 255, 0.2) inset,
+        0 20px 44px rgba(80, 42, 18, 0.42),
+        0 8px 16px rgba(0, 0, 0, 0.14);
+}
+
+body.menu-screen .empa-btn,
+body.menu-screen .merma-btn {
+    border-bottom: 0;
+}
+
+body.menu-screen .menu-footer-corner {
+    right: 18px;
+    bottom: 14px;
+    gap: 8px;
+}
+
+body.menu-screen .footer-btn {
+    border-radius: 12px;
+    padding: 10px 14px;
+    font-size: 0.9rem;
+    font-weight: 700;
+    box-shadow: 0 6px 16px rgba(62, 42, 22, 0.16);
+}
+
+body.menu-screen .apps-script-link {
+    right: 18px;
+    bottom: 66px;
+    background: linear-gradient(180deg, #fff 0%, var(--pdt-vainilla) 100%);
+    color: var(--pdt-negro);
+    border: 1px solid rgba(217, 200, 171, 0.95);
+    box-shadow:
+        0 1px 0 rgba(255, 255, 255, 0.8) inset,
+        0 12px 28px rgba(62, 42, 22, 0.12);
+}
+
+body.menu-screen .apps-script-link a {
+    color: var(--pdt-tostado);
+}
+
+body.forms-screen {
+    background-image:
+        radial-gradient(ellipse 85% 50% at 50% -12%, rgba(192,110,50,0.16), transparent 62%),
+        linear-gradient(180deg, #f8f3e9 0%, #f5ecdc 100%);
+}
+
+body.forms-screen .container {
+    width: min(1000px, 94vw);
+    margin: 14px auto 34px;
+}
+
+body.forms-screen h1 {
+    color: var(--pdt-negro);
+    text-shadow: none;
+    margin-top: 4px;
+    margin-bottom: 22px;
+}
+
+body.forms-screen .volver-menu {
+    color: var(--pdt-negro);
+    background: linear-gradient(180deg, #fff 0%, var(--pdt-vainilla) 100%);
+    border: 1px solid rgba(217, 200, 171, 0.95);
+    box-shadow:
+        0 1px 0 rgba(255, 255, 255, 0.85) inset,
+        0 10px 26px rgba(62, 42, 22, 0.11);
+}
+
+body.forms-screen #form-merma {
+    background: linear-gradient(180deg, #fffdfa 0%, #f8f3e9 100%);
+    color: var(--pdt-negro);
+    border: 1px solid rgba(217, 200, 171, 0.95);
+    box-shadow:
+        0 1px 0 rgba(255, 255, 255, 0.82) inset,
+        0 18px 44px rgba(62, 42, 22, 0.13),
+        0 6px 14px rgba(0, 0, 0, 0.06);
+    border-radius: 24px;
+    max-width: 860px;
+}
+
+body.forms-screen #form-merma h2,
+body.forms-screen #form-merma label {
+    color: var(--pdt-negro);
+    text-shadow: none;
+}
+
+body.forms-screen #form-merma .select,
+body.forms-screen #form-merma input[type="text"],
+body.forms-screen #form-merma input[type="number"],
+body.forms-screen #form-merma input[type="date"] {
+    background: #ffffff;
+    color: var(--pdt-negro);
+    border: 1px solid #d9c8ab;
+    box-shadow: 0 2px 6px rgba(62, 42, 22, 0.08) inset;
+}
+
+body.forms-screen #form-merma .hora-input {
+    background: #f3ead9;
+    color: #5a3219;
+    border: 1px solid #d9c8ab;
+}
+
+body.forms-screen #form-merma .productos-section > label {
+    text-align: center;
+    margin-left: 0;
+}
+
+body.forms-screen #form-merma .seleccionados,
+body.forms-screen #form-merma .panel-productos {
+    background: #fff;
+    border: 1px solid #e4d5ba;
+    box-shadow: 0 10px 24px rgba(62, 42, 22, 0.09);
+}
+
+body.forms-screen #form-merma .prod-name,
+body.forms-screen #form-merma .panel-item {
+    color: var(--pdt-negro);
+}
+
+body.forms-screen #form-merma .panel-item:hover {
+    background: #f6ead8;
+    color: var(--pdt-negro);
+}
+
+body.forms-screen #form-merma button,
+body.forms-screen #form-merma .btn-small,
+body.forms-screen #form-merma .btn-small.secondary {
+    background: linear-gradient(165deg, var(--pdt-tostado-claro) 0%, var(--pdt-tostado) 45%, var(--pdt-tostado-oscuro) 100%);
+    color: var(--pdt-vainilla);
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    box-shadow:
+        0 1px 0 rgba(255, 255, 255, 0.22) inset,
+        0 10px 22px rgba(80, 42, 18, 0.25);
+}
+
+body.forms-screen #form-merma button:hover,
+body.forms-screen #form-merma .btn-small:hover {
+    filter: brightness(1.03);
+    transform: translateY(-1px);
+}
+
+@media (max-width: 860px) {
+    .pdt-logo-corner {
+        width: 74px;
+        height: 74px;
+        top: 10px;
+        left: 10px;
+    }
+
+    body.menu-screen .menu-buttons-horizontal {
+        grid-template-columns: 1fr;
+    }
+
+    body.menu-screen .menu-btn {
+        min-height: 130px;
+    }
+
+    body.menu-screen .menu-footer-corner {
+        left: 8px;
+        right: 8px;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    body.menu-screen .apps-script-link {
+        left: 8px;
+        right: 8px;
+        bottom: 116px;
+    }
+
+    body.forms-screen .container {
+        margin-top: 28px;
+    }
+}
+
 /* ===== Visual refresh (solo Menu + Merma) ===== */
 
 /* Menu principal */
