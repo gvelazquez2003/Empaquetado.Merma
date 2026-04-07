@@ -150,25 +150,26 @@
         function opcionesMotivoHTML(){
             return `
                 <option value="">Motivo…</option>
-                <option>Adherido a Bandeja/Molde/Aro</option>
-                <option>Adherido al Silpad</option>
-                <option>Burbuja/Mancha en la Corona</option>
-                <option>Alveolado/Cavidad</option>
-                <option>Crudo</option>
-                <option>Quemado</option>
-                <option>Color</option>
-                <option>Fermentado</option>
-                <option>Pan pequeño</option>
-                <option>Pan grande</option>
-                <option>Mal Formado</option>
-                <option>Deformado(Horno)</option>
-                <option>Mal corte</option>
-                <option>Manchado</option>
-                <option>Aplastado/Maltratado/Roto</option>
-                <option>Sobrante en buen estado</option>
-                <option>Caido al piso</option>
-                <option>Materia Extraña</option>
-                <option>Defecto de Mezcla</option>`;
+                <option>MANCHADOS</option>
+                <option>ERROR DE PROCESO</option>
+                <option>MAL FORMADO (HORNEADO)</option>
+                <option>QUEMADO</option>
+                <option>APLASTADOS</option>
+                <option>ROTOS</option>
+                <option>CAIDOS AL PISO</option>
+                <option>FERMENTADO</option>
+                <option>ALVEOLO</option>
+                <option>CRUDO</option>
+                <option>MAL FORMADO (BOLEADO)</option>
+                <option>MAL CORTE</option>
+                <option>OTROS</option>
+                <option>ADHERIDO A LA BANDEJA</option>
+                <option>DESMOLDADO</option>
+                <option>SOBRANTE BUEN ESTADO</option>
+                <option>PEQUEÑOS EN TAMAÑO</option>
+                <option>VIRUTA</option>
+                <option>SOBREPASA EL TAMAÑO ADECUADO</option>
+                <option>ADHERIDO AL MOLDE</option>`;
         }
         async function cargarProductos(){
             if(PRODUCTOS_CACHE.length) return PRODUCTOS_CACHE;
