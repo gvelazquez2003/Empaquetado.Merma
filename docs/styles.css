@@ -403,3 +403,224 @@ table.tabla-productos th, table.tabla-productos td { padding:10px 12px; text-ali
 table.tabla-productos tbody tr:nth-child(odd){ background:#1f2336; }
 table.tabla-productos tbody tr:hover { background:#313954; }
 .estado-carga { margin-top:12px; font-size:0.8rem; color:#bfc8e2; }
+
+/* ===== Visual refresh (solo Menu + Merma) ===== */
+
+/* Menu principal */
+.menu-page {
+    max-width: 1080px;
+    margin: 28px auto 24px;
+    padding: 24px 20px 120px;
+}
+
+.brand-corner {
+    position: static;
+    align-self: center;
+    margin-bottom: 6px;
+}
+
+.brand-logo-large {
+    width: 128px;
+    height: 128px;
+    object-fit: contain;
+    border-radius: 50%;
+    background: #ffffff;
+    border: 2px solid rgba(192, 110, 50, 0.35);
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.12);
+}
+
+.menu-page h1 {
+    margin: 8px 0 6px;
+    color: #121826;
+    font-size: clamp(2rem, 5vw, 3rem);
+    letter-spacing: 0.5px;
+}
+
+.bienvenida {
+    margin: 0 0 26px;
+    color: #3b465f;
+    font-size: clamp(1.05rem, 2.5vw, 1.35rem);
+    font-family: Arial, sans-serif;
+    text-align: center;
+}
+
+.menu-buttons-horizontal {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(260px, 1fr));
+    gap: 22px;
+    margin-top: 0;
+}
+
+.menu-btn {
+    width: 100%;
+    min-height: 104px;
+    height: auto;
+    border-radius: 26px;
+    font-size: clamp(1.4rem, 2.8vw, 2rem);
+    font-weight: 700;
+    color: #1c263f;
+    background: linear-gradient(180deg, #ffffff 0%, #f2f5fb 100%);
+    border: 1px solid rgba(33, 41, 66, 0.08);
+    box-shadow: 0 12px 24px rgba(30, 41, 64, 0.12);
+    transition: transform 0.18s ease, box-shadow 0.2s ease, color 0.2s ease;
+}
+
+.menu-btn:hover {
+    transform: translateY(-2px);
+}
+
+.empa-btn {
+    border-bottom: 6px solid #2196f3;
+}
+
+.merma-btn {
+    border-bottom: 6px solid #43e6b1;
+}
+
+.menu-footer-corner {
+    right: 20px;
+    bottom: 18px;
+    gap: 10px;
+}
+
+.footer-btn {
+    padding: 11px 16px;
+    border-radius: 12px;
+    font-size: 0.95rem;
+    font-weight: 700;
+}
+
+.apps-script-link {
+    right: 20px;
+    bottom: 74px;
+    border: 1px solid rgba(67, 230, 177, 0.22);
+}
+
+/* Pagina de Merma */
+#form-merma {
+    background: linear-gradient(165deg, #181c2f 0%, #131a30 100%);
+    border: 1px solid rgba(67, 230, 177, 0.2);
+    box-shadow: 0 18px 40px rgba(16, 26, 48, 0.3);
+    max-width: 760px;
+    padding: 34px 34px 28px;
+}
+
+#form-merma h2 {
+    margin: 0 0 12px;
+    letter-spacing: 0.8px;
+}
+
+#form-merma .compact-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px 18px;
+}
+
+#form-merma .field {
+    min-width: 0;
+}
+
+#form-merma .field label {
+    margin-left: 0;
+    font-size: 1.05rem;
+}
+
+#form-merma input[type="text"],
+#form-merma input[type="date"],
+#form-merma .select {
+    width: 100%;
+    max-width: none;
+    height: 50px;
+    border: 1px solid #3d445f;
+    border-radius: 12px;
+    background: #2a2f3f;
+    color: #f3f6ff;
+    box-sizing: border-box;
+}
+
+#form-merma input::placeholder {
+    color: #aeb6cf;
+}
+
+#form-merma .hora-input {
+    height: 42px;
+    color: #d6ffe8;
+    background: #232944;
+    border: 1px solid #334062;
+}
+
+#merma-btn-fecha-hoy,
+#merma-btn-agregar-producto,
+#merma-form button[type="submit"],
+#merma-form button.secondary {
+    border-radius: 12px;
+    font-weight: 700;
+    border: none;
+    box-shadow: 0 8px 18px rgba(67, 230, 177, 0.24);
+}
+
+#merma-form button[type="submit"],
+#merma-btn-fecha-hoy,
+#merma-btn-agregar-producto {
+    background: #43e6b1;
+    color: #13253f;
+}
+
+#merma-form button[type="submit"] {
+    max-width: 260px;
+    margin: 10px auto 0;
+}
+
+#merma-form button.secondary {
+    background: #2196f3;
+    color: #ffffff;
+    box-shadow: 0 8px 18px rgba(33, 150, 243, 0.24);
+}
+
+#form-merma .productos-section > label {
+    text-align: center;
+    display: block;
+    margin: 6px 0 12px;
+}
+
+#form-merma .agregar-wrapper {
+    max-width: 420px;
+    margin: 8px auto 0;
+}
+
+#form-merma .seleccionados {
+    background: #232a43;
+    border: 1px solid rgba(136, 156, 207, 0.28);
+}
+
+#form-merma .panel-productos {
+    background: #232a43;
+    border: 1px solid rgba(136, 156, 207, 0.28);
+}
+
+@media (max-width: 900px) {
+    .menu-buttons-horizontal {
+        grid-template-columns: 1fr;
+    }
+
+    .menu-footer-corner {
+        left: 12px;
+        right: 12px;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .apps-script-link {
+        left: 12px;
+        right: 12px;
+        bottom: 118px;
+    }
+
+    #form-merma {
+        padding: 26px 18px 22px;
+    }
+
+    #form-merma .compact-grid {
+        grid-template-columns: 1fr;
+    }
+}
