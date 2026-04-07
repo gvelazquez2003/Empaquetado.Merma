@@ -1,0 +1,9 @@
+{
+  "redirects": [
+    {
+      "source": "/",
+      "destination": "/docs/menu.html",
+      "permanent": false
+    }
+  ]
+}
