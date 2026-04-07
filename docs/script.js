@@ -1,9 +1,22 @@
 // Configura aquí la URL de tu Apps Script Web App (deployment URL que termina en /exec)
 // Ejemplo: const WEB_APP_URL = "https://script.google.com/macros/s/AKfycby.../exec";
 // Si hay URL guardada en ajustes, úsala; si no, fallback a la fija:
-const WEB_APP_URL = (typeof localStorage !== 'undefined' && localStorage.getItem('WEB_APP_URL_DYNAMIC'))
-    ? localStorage.getItem('WEB_APP_URL_DYNAMIC')
-    : "https://script.google.com/macros/s/AKfycbyNV-0aAlvp3TTfnfiBhGvBeuzlMkSZKl0dOWRkKR8-jBLcmaPs2bnNuF4lYu9k2Yneuw/exec"; // URL por defecto (deployment actual)
+const DEFAULT_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxm5G6Xq-LU3o-IOUtrWpGO0a4a6832UPC0AcBTFAAwmlEh84goMwVnfs95SRzMG4Vu9A/exec";
+const LEGACY_WEB_APP_URLS = new Set([
+    "https://script.google.com/macros/s/AKfycbxn-tf1gi_efLVnSgletElQBSMgvn1Ma-SCET5sy48G2QGDpUs93gX5lsRjXA8vsP_9Sg/exec",
+    "https://script.google.com/macros/s/AKfycbyNV-0aAlvp3TTfnfiBhGvBeuzlMkSZKl0dOWRkKR8-jBLcmaPs2bnNuF4lYu9k2Yneuw/exec"
+]);
+function resolveWebAppUrl_(){
+    if (typeof localStorage === 'undefined') return DEFAULT_WEB_APP_URL;
+    const saved = (localStorage.getItem('WEB_APP_URL_DYNAMIC') || '').trim();
+    if (!saved) return DEFAULT_WEB_APP_URL;
+    if (LEGACY_WEB_APP_URLS.has(saved)) {
+        localStorage.setItem('WEB_APP_URL_DYNAMIC', DEFAULT_WEB_APP_URL);
+        return DEFAULT_WEB_APP_URL;
+    }
+    return saved;
+}
+const WEB_APP_URL = resolveWebAppUrl_();
 
 // Endpoints por hoja (el Apps Script espera ?sheet=Empaquetado | ?sheet=Merma)
 const APPS_SCRIPT_URL_EMPAQUETADOS = WEB_APP_URL ? WEB_APP_URL + "?sheet=Empaquetado" : "";
@@ -109,6 +122,9 @@ function enviarFormulario(formId, url) {
                         codigo: inp.dataset.codigo,
                         descripcion: inp.dataset.desc || '',
                         unidad: inp.dataset.unidad || '',
+                        paquetes: inp.dataset.paquetes || '',
+                        cestas: inp.dataset.cestas || '',
+                        sobre_piso: inp.dataset.sobrePiso || '',
                         cantidad: val,
                         motivo: motivoVal,
                         lote: loteVal

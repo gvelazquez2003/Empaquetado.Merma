@@ -59,7 +59,20 @@
     // Panel de ajustes dinámico
     // Clave de administrador estática (solo control básico en cliente; no seguridad real).
     const ADMIN_KEY = 'PASANTIAS90';
-    const DEFAULT_URL = "https://script.google.com/macros/s/AKfycbxn-tf1gi_efLVnSgletElQBSMgvn1Ma-SCET5sy48G2QGDpUs93gX5lsRjXA8vsP_9Sg/exec";
+    const DEFAULT_URL = "https://script.google.com/macros/s/AKfycbxm5G6Xq-LU3o-IOUtrWpGO0a4a6832UPC0AcBTFAAwmlEh84goMwVnfs95SRzMG4Vu9A/exec";
+    const LEGACY_URLS = new Set([
+      "https://script.google.com/macros/s/AKfycbxn-tf1gi_efLVnSgletElQBSMgvn1Ma-SCET5sy48G2QGDpUs93gX5lsRjXA8vsP_9Sg/exec",
+      "https://script.google.com/macros/s/AKfycbyNV-0aAlvp3TTfnfiBhGvBeuzlMkSZKl0dOWRkKR8-jBLcmaPs2bnNuF4lYu9k2Yneuw/exec"
+    ]);
+    function resolveWebAppUrl(){
+        const saved = (localStorage.getItem('WEB_APP_URL_DYNAMIC')||'').trim();
+        if(!saved) return DEFAULT_URL;
+        if(LEGACY_URLS.has(saved)){
+            localStorage.setItem('WEB_APP_URL_DYNAMIC', DEFAULT_URL);
+            return DEFAULT_URL;
+        }
+        return saved;
+    }
     function isAdminUnlocked(){ try { return sessionStorage.getItem('ADMIN_UNLOCKED') === '1'; } catch(_) { return false; } }
     function openProductos(e){
         e.preventDefault();
@@ -104,9 +117,8 @@
         ocultarBloqueURL();
     }
     function cargarURL(){
-        const saved = localStorage.getItem('WEB_APP_URL_DYNAMIC');
         const input = document.getElementById('input-webapp');
-        input.value = saved && saved.trim() ? saved.trim() : DEFAULT_URL;
+        input.value = resolveWebAppUrl();
     }
     function ocultarBloqueURL(){ const b=document.getElementById('url-block'); if(b) b.style.display='none'; }
     function desbloquearURL(){
@@ -146,7 +158,7 @@
             const blockVisible = document.getElementById('url-block').style.display!=='none';
             let url = '';
             if(blockVisible){ url = document.getElementById('input-webapp').value.trim(); }
-            if(!url){ url = (localStorage.getItem('WEB_APP_URL_DYNAMIC')||'').trim(); }
+            if(!url){ url = resolveWebAppUrl(); }
             if(!url){ url = DEFAULT_URL; }
             if(!url){ mostrarResultado('No hay URL: desbloquea y guarda primero', false); return; }
             const pingUrl = url + (url.includes('?')?'&':'?') + 'ping=test';

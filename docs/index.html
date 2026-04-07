@@ -144,8 +144,19 @@
     <script>
     (function(){
         let PRODUCTOS_CACHE = [];
+        const DEFAULT_URL = "https://script.google.com/macros/s/AKfycbxm5G6Xq-LU3o-IOUtrWpGO0a4a6832UPC0AcBTFAAwmlEh84goMwVnfs95SRzMG4Vu9A/exec";
+        const LEGACY_URLS = new Set([
+            "https://script.google.com/macros/s/AKfycbxn-tf1gi_efLVnSgletElQBSMgvn1Ma-SCET5sy48G2QGDpUs93gX5lsRjXA8vsP_9Sg/exec",
+            "https://script.google.com/macros/s/AKfycbyNV-0aAlvp3TTfnfiBhGvBeuzlMkSZKl0dOWRkKR8-jBLcmaPs2bnNuF4lYu9k2Yneuw/exec"
+        ]);
         function getBaseUrl(){
-            return (localStorage.getItem('WEB_APP_URL_DYNAMIC')||'').trim() || "https://script.google.com/macros/s/AKfycbxn-tf1gi_efLVnSgletElQBSMgvn1Ma-SCET5sy48G2QGDpUs93gX5lsRjXA8vsP_9Sg/exec";
+            const saved = (localStorage.getItem('WEB_APP_URL_DYNAMIC')||'').trim();
+            if(!saved) return DEFAULT_URL;
+            if(LEGACY_URLS.has(saved)){
+                localStorage.setItem('WEB_APP_URL_DYNAMIC', DEFAULT_URL);
+                return DEFAULT_URL;
+            }
+            return saved;
         }
         function opcionesMotivoHTML(){
             return `
@@ -179,7 +190,14 @@
                 const r = await fetch(url, {method:'GET', cache:'no-store'});
                 const text = await r.text();
                 const j = JSON.parse(text);
-                PRODUCTOS_CACHE = Array.isArray(j.products) ? j.products.map(p=>({codigo:p.codigo, desc:p.descripcion, unidad:p.unidad})) : [];
+                PRODUCTOS_CACHE = Array.isArray(j.products) ? j.products.map(p=>({
+                    codigo: p.codigo,
+                    desc: p.descripcion,
+                    unidad: p.unidad,
+                    paquetes: p.paquetes,
+                    cestas: p.cestas,
+                    sobre_piso: p.sobre_piso
+                })) : [];
             } catch(e){ PRODUCTOS_CACHE = []; }
             return PRODUCTOS_CACHE;
         }
@@ -246,7 +264,10 @@
                         <input type="number" min="1" step="1" class="prod-qty" placeholder="0"
                             data-codigo="${p.codigo}"
                             data-desc="${(p.desc||'').replace(/"/g,'&quot;')}"
-                            data-unidad="${p.unidad}" name="qty_${p.codigo}">
+                            data-unidad="${p.unidad}"
+                            data-paquetes="${p.paquetes || ''}"
+                            data-cestas="${p.cestas || ''}"
+                            data-sobre-piso="${p.sobre_piso || ''}" name="qty_${p.codigo}">
                         ${isMerma ? `<select class="merma-motivo select" style="min-width:210px;">${opcionesMotivoHTML()}</select>
                         <input type="text" class="merma-lote" placeholder="Lote" style="min-width:120px;"/>` : `<input type="text" class="empa-lote" placeholder="Lote" style="min-width:140px;"/>`}
                         <button type="button" class="remove-sel">✕</button>

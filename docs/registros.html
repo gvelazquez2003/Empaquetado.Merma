@@ -86,8 +86,20 @@
     </div>
   </div>
   <script>
-  const DEFAULT_URL = "https://script.google.com/macros/s/AKfycbxn-tf1gi_efLVnSgletElQBSMgvn1Ma-SCET5sy48G2QGDpUs93gX5lsRjXA8vsP_9Sg/exec"; // fallback actualizado (mismo que script.js)
-    function getBaseUrl(){ return (localStorage.getItem('WEB_APP_URL_DYNAMIC')||'').trim() || DEFAULT_URL; }
+  const DEFAULT_URL = "https://script.google.com/macros/s/AKfycbxm5G6Xq-LU3o-IOUtrWpGO0a4a6832UPC0AcBTFAAwmlEh84goMwVnfs95SRzMG4Vu9A/exec";
+  const LEGACY_URLS = new Set([
+    "https://script.google.com/macros/s/AKfycbxn-tf1gi_efLVnSgletElQBSMgvn1Ma-SCET5sy48G2QGDpUs93gX5lsRjXA8vsP_9Sg/exec",
+    "https://script.google.com/macros/s/AKfycbyNV-0aAlvp3TTfnfiBhGvBeuzlMkSZKl0dOWRkKR8-jBLcmaPs2bnNuF4lYu9k2Yneuw/exec"
+  ]);
+    function getBaseUrl(){
+      const saved = (localStorage.getItem('WEB_APP_URL_DYNAMIC')||'').trim();
+      if(!saved) return DEFAULT_URL;
+      if(LEGACY_URLS.has(saved)){
+        localStorage.setItem('WEB_APP_URL_DYNAMIC', DEFAULT_URL);
+        return DEFAULT_URL;
+      }
+      return saved;
+    }
 
     async function fetchRecent(sheetKey, limit){
       const base = getBaseUrl();
