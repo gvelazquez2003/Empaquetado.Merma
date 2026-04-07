@@ -57,8 +57,8 @@ git push -u origin main
    - Source: Deploy from a branch
    - Branch: `main` y carpeta `/docs`
 
-4. Tu sitio quedará disponible en: `https://usuario.github.io/Formularios.Empa.Merma/`.
-   - Entra directo por `https://usuario.github.io/Formularios.Empa.Merma/docs/menu.html` o configura un `index.html` en la raíz si prefieres.
+4. Tu sitio quedará disponible en: `https://empaquetado-merma.vercel.app/`.
+   - Entra directo por `https://empaquetado-merma.vercel.app/`.
 
 ## Verificación rápida
 
