@@ -21,22 +21,22 @@
             <a href="#" class="footer-btn" onclick="openProductos(event)">Productos</a>
             <a href="#" class="footer-btn inicio-btn" onclick="location.reload()">Inicio</a>
         </div>
-        <div id="panel-ajustes" class="apps-script-link" style="display:none; flex-direction:column; gap:12px;">
+        <div id="panel-ajustes" class="apps-script-link" style="display:none;">
             <strong>Configuración Backend</strong>
-            <label style="font-size:0.9rem; color:#bfc8e2;">Clave (para desbloquear la URL):</label>
-            <input id="input-key" type="password" placeholder="Ingresa la clave" style="width:100%; padding:10px 14px; border-radius:10px; border:1px solid #444; background:#23263a; color:#fff;">
-            <button class="footer-btn" style="padding:10px 12px; font-size:0.8rem; background:#ffb347; color:#23263a; width:max-content;" onclick="desbloquearURL()">Desbloquear URL</button>
-            <div id="url-block" style="display:none; flex-direction:column; gap:8px;">
-                <label style="font-size:0.9rem; color:#bfc8e2;">URL Apps Script (termina en /exec):</label>
-                <input id="input-webapp" type="text" placeholder="https://script.google.com/.../exec" style="width:100%; padding:10px 14px; border-radius:10px; border:1px solid #444; background:#23263a; color:#fff;">
-                <div style="display:flex; gap:8px; flex-wrap:wrap;">
-                    <button class="footer-btn" style="padding:10px 16px; font-size:0.9rem;" onclick="guardarURL()">Guardar</button>
-                    <button class="footer-btn" style="padding:10px 16px; font-size:0.9rem; background:#2196f3;" onclick="probarConexion()">Probar conexión</button>
+            <label class="panel-label">Clave (para desbloquear la URL):</label>
+            <input id="input-key" class="panel-input" type="password" placeholder="Ingresa la clave">
+            <button class="footer-btn panel-btn" onclick="desbloquearURL()">Desbloquear URL</button>
+            <div id="url-block" class="url-block" style="display:none;">
+                <label class="panel-label">URL Apps Script (termina en /exec):</label>
+                <input id="input-webapp" class="panel-input" type="text" placeholder="https://script.google.com/.../exec">
+                <div class="panel-actions">
+                    <button class="footer-btn panel-btn" onclick="guardarURL()">Guardar</button>
+                    <button class="footer-btn panel-btn" onclick="probarConexion()">Probar conexión</button>
                 </div>
             </div>
-            <button class="footer-btn" style="padding:10px 16px; font-size:0.9rem; background:#43e6b1; color:#23263a;" onclick="cerrarAjustes()">Cerrar</button>
-            <div id="resultado-prueba" style="margin-top:4px; font-size:0.85rem;"></div>
-            <p style="margin-top:8px; font-size:0.7rem; opacity:0.7;">La URL se guarda en localStorage y se aplica al cargar los formularios. La clave solo desbloquea la visibilidad.</p>
+            <button class="footer-btn panel-btn" onclick="cerrarAjustes()">Cerrar</button>
+            <div id="resultado-prueba" class="panel-resultado"></div>
+            <p class="panel-nota">La URL se guarda en localStorage y se aplica al cargar los formularios. La clave solo desbloquea la visibilidad.</p>
         </div>
         <div class="menu-credito" style="position:fixed; bottom:10px; left:14px; font-size:11px; color:#bfc8e2; opacity:0.65; pointer-events:none;">
             Hecho por el Pasante de Producción Gerardo Siblesz
@@ -80,7 +80,7 @@
         p.style.display = 'flex';
         const res = document.getElementById('resultado-prueba');
         res.textContent = 'Ingresa la clave para acceder a Productos';
-        res.style.color = '#ffb347';
+        res.style.color = '#C06E32';
         try { sessionStorage.setItem('GOTO_PRODUCTOS','1'); } catch(_) {}
         const keyInput = document.getElementById('input-key');
         if(keyInput) keyInput.focus();
@@ -92,7 +92,7 @@
         p.style.display = 'flex';
         const res = document.getElementById('resultado-prueba');
         res.textContent = 'Ingresa la clave para acceder a Registros';
-        res.style.color = '#ffb347';
+        res.style.color = '#C06E32';
         try { sessionStorage.setItem('GOTO_REGISTROS','1'); } catch(_) {}
         const keyInput = document.getElementById('input-key');
         if(keyInput) keyInput.focus();
@@ -182,7 +182,7 @@
                       .catch(err=> mostrarResultado('Failed to fetch. Verifica que el Web App esté desplegado como "Anyone" y la URL termine en /exec. Detalle: ' + err, false));
                 });
         }
-    function mostrarResultado(msg, ok){ const el=document.getElementById('resultado-prueba'); el.textContent=msg; el.style.color= ok?'#43e6b1':'#ff7675'; }
+    function mostrarResultado(msg, ok){ const el=document.getElementById('resultado-prueba'); el.textContent=msg; el.style.color= ok?'#2f6f45':'#7A1D00'; }
     </script>
 </body>
 </html>
