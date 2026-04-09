@@ -524,6 +524,39 @@ body.menu-screen .footer-btn {
     box-shadow: 0 6px 16px rgba(62, 42, 22, 0.16);
 }
 
+/* Botones del acceso rapido (Ajustes, Registros, Productos, Inicio) */
+body.menu-screen .menu-footer-corner .footer-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 54px;
+    min-width: 142px;
+    padding: 14px 24px;
+    border-radius: 16px;
+    font-size: 1.08rem;
+    font-weight: 800;
+    letter-spacing: 0.2px;
+    color: var(--pdt-vainilla);
+    background:
+        linear-gradient(145deg, rgba(255, 255, 255, 0.12) 0%, transparent 42%),
+        linear-gradient(165deg, var(--pdt-tostado-claro) 0%, var(--pdt-tostado) 38%, var(--pdt-tostado-oscuro) 100%);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    box-shadow:
+        0 1px 0 rgba(255, 255, 255, 0.18) inset,
+        0 10px 22px rgba(80, 42, 18, 0.28),
+        0 4px 10px rgba(0, 0, 0, 0.12);
+    transition: background 0.2s ease, color 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
+}
+
+body.menu-screen .menu-footer-corner .footer-btn:hover,
+body.menu-screen .menu-footer-corner .footer-btn:focus-visible {
+    background: #000000;
+    color: #ffffff;
+    transform: translateY(-1px);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.28);
+    outline: none;
+}
+
 body.menu-screen .apps-script-link {
     right: 18px;
     bottom: 66px;
@@ -660,6 +693,14 @@ body.forms-screen #form-merma .btn-small:hover {
         right: 8px;
         justify-content: center;
         flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    body.menu-screen .menu-footer-corner .footer-btn {
+        min-width: 132px;
+        min-height: 48px;
+        padding: 12px 18px;
+        font-size: 0.98rem;
     }
 
     body.menu-screen .apps-script-link {
