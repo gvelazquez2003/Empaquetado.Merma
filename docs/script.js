@@ -22,6 +22,48 @@ const WEB_APP_URL = resolveWebAppUrl_();
 const APPS_SCRIPT_URL_EMPAQUETADOS = WEB_APP_URL ? WEB_APP_URL + "?sheet=Empaquetado" : "";
 const APPS_SCRIPT_URL_MERMA = WEB_APP_URL ? WEB_APP_URL + "?sheet=Merma" : "";
 
+const BACKEND_URL = (typeof localStorage !== 'undefined' && localStorage.getItem('BACKEND_URL'))
+    ? localStorage.getItem('BACKEND_URL')
+    : 'https://almac-n-09.onrender.com';
+
+function isBackendApiUrl(url) {
+    const value = String(url || '').trim();
+    return /^https?:\/\//i.test(value) && !/script\.google\.com/i.test(value);
+}
+
+async function registrarLoteBackend(seleccionados, codigoLote) {
+    const productos = (seleccionados || []).map(item => ({
+        codigo: item.codigo,
+        descripcion: item.descripcion || "",
+        cantidad: item.cantidad,
+        paquetes: item.paquetes || "",
+        sobre_piso: item.sobre_piso || item.sobrePiso || "",
+        lote: item.lote || ""
+    }));
+
+    if (!productos.length) return { ok: false };
+
+    const payload = { productos };
+    if (codigoLote) payload.codigo_lote = codigoLote;
+
+    const response = await fetch(`${BACKEND_URL}/nuevo-lote`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+    });
+
+    if (response.status === 409) {
+        return { ok: true, duplicate: true };
+    }
+
+    if (!response.ok) {
+        const text = await response.text();
+        throw new Error(text || `HTTP ${response.status}`);
+    }
+
+    return { ok: true, duplicate: false };
+}
+
 function generarNonce() {
     try {
         if (window.crypto && window.crypto.getRandomValues) {
@@ -194,6 +236,8 @@ function enviarFormulario(formId, url) {
             }
             return;
         }
+        let backendSyncStatus = 'not-applicable';
+
         fetch(url, {
             method: "POST",
             body: datos
@@ -217,7 +261,27 @@ function enviarFormulario(formId, url) {
             try { console.log('[ENVIAR_FORM]', formId, 'status:', response.status, 'okFlag:', ok, 'duplicate:', duplicate, 'raw:', txt); } catch(_) {}
             // Consideramos éxito también si la respuesta es no legible pero status 200 (opaque redirect no-cors)
             if (ok || response.status === 0) {
-                if (msgEl) msgEl.textContent = duplicate ? "Registro ya existente (deduplicado)." : "¡Formulario enviado correctamente!";
+                if (formId === "empaquetados-form" && isBackendApiUrl(BACKEND_URL)) {
+                    try {
+                        const backendResult = await registrarLoteBackend(seleccionados, loteGlobal);
+                        backendSyncStatus = backendResult && backendResult.ok ? 'ok' : 'failed';
+                    } catch (backendError) {
+                        backendSyncStatus = 'failed';
+                        try { console.error('[BACKEND_SYNC_ERROR]', backendError); } catch(_) {}
+                    }
+                }
+
+                if (msgEl) {
+                    if (duplicate) {
+                        msgEl.textContent = "Registro ya existente (deduplicado).";
+                    } else if (formId === "empaquetados-form") {
+                        msgEl.textContent = backendSyncStatus === 'ok'
+                            ? "¡Formulario enviado! Registro disponible para validación en Almacen09."
+                            : "¡Formulario enviado! Verifica sincronización con Almacen09.";
+                    } else {
+                        msgEl.textContent = "¡Formulario enviado correctamente!";
+                    }
+                }
                 // Disparar evento para página de registros
                 try {
                     const insertedCount = Array.from(form.querySelectorAll('.prod-qty')).filter(inp => parseInt(inp.value,10)>0).length;
