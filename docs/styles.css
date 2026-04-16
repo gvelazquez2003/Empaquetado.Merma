@@ -1169,3 +1169,164 @@ body.forms-screen #form-merma .btn-small:hover {
         grid-template-columns: 1fr;
     }
 }
+
+/* ===== Palette sync with PruebaEmpaqFront (Forms + Confirmacion) ===== */
+body.forms-screen {
+    background:
+        radial-gradient(ellipse 85% 50% at 50% -12%, rgba(192, 110, 50, 0.16), transparent 62%),
+        linear-gradient(180deg, #f8f3e9 0%, #f5ecdc 100%);
+    color: var(--pdt-negro);
+}
+
+body.forms-screen #form-empaquetados,
+body.forms-screen #form-merma {
+    background: linear-gradient(180deg, #fffdfa 0%, #f8f3e9 100%);
+    color: var(--pdt-negro);
+    border: 1px solid rgba(217, 200, 171, 0.95);
+    box-shadow:
+        0 1px 0 rgba(255, 255, 255, 0.82) inset,
+        0 18px 44px rgba(62, 42, 22, 0.13),
+        0 6px 14px rgba(0, 0, 0, 0.06);
+    border-radius: 24px;
+    max-width: 860px;
+}
+
+body.forms-screen #form-empaquetados h2,
+body.forms-screen #form-merma h2,
+body.forms-screen #form-empaquetados label,
+body.forms-screen #form-merma label {
+    color: var(--pdt-negro);
+    text-shadow: none;
+}
+
+body.forms-screen #form-empaquetados input[type="text"],
+body.forms-screen #form-empaquetados input[type="number"],
+body.forms-screen #form-empaquetados input[type="date"],
+body.forms-screen #form-empaquetados .select,
+body.forms-screen #form-merma input[type="text"],
+body.forms-screen #form-merma input[type="number"],
+body.forms-screen #form-merma input[type="date"],
+body.forms-screen #form-merma .select {
+    background: #ffffff;
+    color: var(--pdt-negro);
+    border: 1px solid #d9c8ab;
+    box-shadow: 0 2px 6px rgba(62, 42, 22, 0.08) inset;
+}
+
+body.forms-screen #form-empaquetados input::placeholder,
+body.forms-screen #form-merma input::placeholder {
+    color: #7b6754;
+}
+
+body.forms-screen #form-empaquetados .hora-input,
+body.forms-screen #form-merma .hora-input {
+    background: #f3ead9;
+    color: #5a3219;
+    border: 1px solid #d9c8ab;
+}
+
+body.forms-screen #form-empaquetados .seleccionados,
+body.forms-screen #form-empaquetados .panel-productos,
+body.forms-screen #form-merma .seleccionados,
+body.forms-screen #form-merma .panel-productos {
+    background: #fff;
+    border: 1px solid #e4d5ba;
+    box-shadow: 0 10px 24px rgba(62, 42, 22, 0.09);
+}
+
+body.forms-screen #form-empaquetados .producto-line,
+body.forms-screen #form-merma .producto-line {
+    border-bottom: 1px solid #f0e4cf;
+}
+
+body.forms-screen #form-empaquetados .prod-name,
+body.forms-screen #form-empaquetados .panel-item,
+body.forms-screen #form-merma .prod-name,
+body.forms-screen #form-merma .panel-item {
+    color: var(--pdt-negro);
+}
+
+body.forms-screen #form-empaquetados .panel-item:hover,
+body.forms-screen #form-merma .panel-item:hover {
+    background: #f6ead8;
+    color: var(--pdt-negro);
+}
+
+body.forms-screen #form-empaquetados .prod-qty,
+body.forms-screen #form-merma .prod-qty {
+    background: #ffffff;
+    color: var(--pdt-negro);
+    border: 1px solid #d9c8ab;
+}
+
+body.forms-screen #form-empaquetados button,
+body.forms-screen #form-merma button,
+body.forms-screen #form-empaquetados .btn-small,
+body.forms-screen #form-merma .btn-small,
+body.forms-screen #form-empaquetados .btn-small.secondary,
+body.forms-screen #form-merma .btn-small.secondary {
+    background: var(--pdt-tostado);
+    color: #ffffff;
+    border: none;
+    box-shadow: 0 8px 18px rgba(192, 110, 50, 0.22);
+}
+
+body.forms-screen #form-empaquetados button:hover,
+body.forms-screen #form-merma button:hover,
+body.forms-screen #form-empaquetados .btn-small:hover,
+body.forms-screen #form-merma .btn-small:hover {
+    background: #000000;
+    color: #ffffff;
+    transform: translateY(-1px);
+}
+
+body.forms-screen #form-empaquetados button.secondary:not(.btn-small),
+body.forms-screen #form-merma button.secondary:not(.btn-small) {
+    background: #f1d8bf;
+    color: var(--pdt-negro);
+}
+
+body.forms-screen #form-empaquetados button.secondary:not(.btn-small):hover,
+body.forms-screen #form-merma button.secondary:not(.btn-small):hover {
+    background: #dfbf9e;
+    color: var(--pdt-negro);
+}
+
+body.forms-screen .confirm-panel {
+    background: linear-gradient(180deg, #fffdfa 0%, #f8f3e9 100%);
+    border: 1px solid rgba(217, 200, 171, 0.95);
+    color: var(--pdt-negro);
+}
+
+body.forms-screen .confirm-productos-title {
+    background: #f1dfc8;
+    color: #5a3219;
+}
+
+body.forms-screen .confirm-actions #confirm-btn-send {
+    background: var(--pdt-tostado);
+    color: #ffffff;
+    box-shadow: 0 8px 18px rgba(192, 110, 50, 0.22);
+}
+
+body.forms-screen .confirm-actions #confirm-btn-send:hover {
+    background: #000000;
+    color: #ffffff;
+}
+
+body.forms-screen .confirm-actions #confirm-btn-send:disabled {
+    background: #d6b79a;
+    color: #4d3a2e;
+    box-shadow: none;
+}
+
+body.forms-screen .confirm-actions #confirm-btn-cancel {
+    background: #f1d8bf;
+    color: var(--pdt-negro);
+    box-shadow: 0 8px 18px rgba(62, 42, 22, 0.12);
+}
+
+body.forms-screen .confirm-actions #confirm-btn-cancel:hover {
+    background: #dfbf9e;
+    color: var(--pdt-negro);
+}
