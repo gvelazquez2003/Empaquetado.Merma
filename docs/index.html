@@ -236,6 +236,39 @@
                 const min = String(vz.getMinutes()).padStart(2,'0');
                 hora.value = `${hh}:${min}`;
             }
+            syncHoraEditable(prefix);
+        }
+        function fechaCaracasHoyISO(){
+            const now = new Date();
+            const vz = new Date(now.toLocaleString('en-US',{timeZone:'America/Caracas'}));
+            const yyyy = vz.getFullYear();
+            const mm = String(vz.getMonth()+1).padStart(2,'0');
+            const dd = String(vz.getDate()).padStart(2,'0');
+            return `${yyyy}-${mm}-${dd}`;
+        }
+        function syncHoraEditable(prefix){
+            const fecha = document.getElementById(prefix+'-fecha');
+            const hora = document.getElementById(prefix+'-hora');
+            if(!fecha || !hora) return;
+            if(!fecha.value){
+                hora.readOnly = true;
+                hora.title = 'Selecciona una fecha o usa el boton Hoy.';
+                return;
+            }
+            const esHoy = fecha.value === fechaCaracasHoyISO();
+            if(esHoy){
+                hora.readOnly = true;
+                const now = new Date();
+                const vz = new Date(now.toLocaleString('en-US',{timeZone:'America/Caracas'}));
+                const hh = String(vz.getHours()).padStart(2,'0');
+                const min = String(vz.getMinutes()).padStart(2,'0');
+                hora.value = `${hh}:${min}`;
+                hora.title = 'Hora automatica para registros de hoy.';
+            } else {
+                hora.readOnly = false;
+                if(!hora.value) hora.value = '00:00';
+                hora.title = 'Puedes editar la hora para registros de otra fecha.';
+            }
         }
         function initFecha(prefix){
             const btn = document.getElementById(prefix+'-btn-fecha-hoy');
@@ -247,6 +280,16 @@
                 if(prefix === 'merma') updateMermaLotes();
                 if(prefix === 'empa') updateEmpaLotes();
             });
+            if(fecha){
+                fecha.addEventListener('change', ()=>syncHoraEditable(prefix));
+            }
+            if(hora){
+                hora.addEventListener('input', ()=>{
+                    if (hora.readOnly) {
+                        syncHoraEditable(prefix);
+                    }
+                });
+            }
         }
         function initPanel(prefix){
             const panel = document.getElementById(prefix+'-panel-productos');
@@ -413,6 +456,8 @@
             if(fechaMerma) fechaMerma.addEventListener('change', updateMermaLotes);
             updateEmpaLotes();
             updateMermaLotes();
+            syncHoraEditable('empa');
+            syncHoraEditable('merma');
         });
     })();
     </script>
