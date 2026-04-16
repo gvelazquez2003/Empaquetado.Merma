@@ -677,12 +677,24 @@ body.forms-screen h1 {
 }
 
 body.forms-screen .volver-menu {
-    color: var(--pdt-negro);
-    background: linear-gradient(180deg, #fff 0%, var(--pdt-vainilla) 100%);
-    border: 1px solid rgba(217, 200, 171, 0.95);
+    font-family: Arial, sans-serif;
+    font-weight: 700;
+    color: #ffffff;
+    background: var(--pdt-tostado);
+    border: none;
     box-shadow:
-        0 1px 0 rgba(255, 255, 255, 0.85) inset,
-        0 10px 26px rgba(62, 42, 22, 0.11);
+        0 1px 0 rgba(255, 255, 255, 0.2) inset,
+        0 8px 18px rgba(192, 110, 50, 0.22);
+    transition: background 0.2s, color 0.2s, transform 0.15s, box-shadow 0.2s;
+}
+
+body.forms-screen .volver-menu:hover,
+body.forms-screen .volver-menu:focus-visible {
+    background: #000000;
+    color: #ffffff;
+    transform: translateY(-1px);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.26);
+    outline: none;
 }
 
 body.forms-screen #form-merma {
