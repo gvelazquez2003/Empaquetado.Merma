@@ -139,6 +139,25 @@
                 </div>
             </form>
         </div>
+        <div id="confirm-overlay" class="confirm-overlay" style="display:none;">
+            <div class="confirm-panel" role="dialog" aria-modal="true" aria-labelledby="confirm-title">
+                <h3 id="confirm-title">Confirmar envio</h3>
+                <p class="confirm-subtitle">Verifica la informacion antes de enviar el registro.</p>
+                <div id="confirm-resumen" class="confirm-resumen"></div>
+                <div class="confirm-productos-wrap">
+                    <div class="confirm-productos-title">Productos a enviar</div>
+                    <div id="confirm-productos" class="confirm-productos"></div>
+                </div>
+                <label class="confirm-check-row" for="confirm-check">
+                    <input type="checkbox" id="confirm-check" />
+                    <span>Confirmo el envio</span>
+                </label>
+                <div class="confirm-actions">
+                    <button type="button" id="confirm-btn-cancel" class="secondary">Cancelar</button>
+                    <button type="button" id="confirm-btn-send" disabled>Enviar</button>
+                </div>
+            </div>
+        </div>
         <div id="mensaje"></div>
     </div>
     <script src="script.js"></script>

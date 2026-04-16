@@ -75,9 +75,110 @@ function generarNonce() {
     return Date.now().toString(36) + Math.random().toString(36).slice(2);
 }
 
+function escapeHtml(value) {
+    return String(value || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+}
+
+function obtenerResumenConfirmacion(formId, loteGlobal) {
+    const read = (id) => {
+        const el = document.getElementById(id);
+        return el ? String(el.value || '').trim() : '';
+    };
+
+    if (formId === 'empaquetados-form') {
+        return [
+            { label: 'Fecha', value: read('empa-fecha') },
+            { label: 'Hora', value: read('empa-hora') },
+            { label: 'Maquina', value: read('empa-maquina') },
+            { label: 'Lote global', value: loteGlobal || '' },
+            { label: 'Entregado a', value: read('empa-entregado') },
+            { label: 'Registro', value: read('empa-registro') },
+            { label: 'Responsable', value: read('empa-responsable') },
+            { label: 'Sede', value: read('empa-sede') }
+        ].filter(item => item.value);
+    }
+
+    return [
+        { label: 'Fecha', value: read('merma-fecha') },
+        { label: 'Hora', value: read('merma-hora') },
+        { label: 'Responsable', value: read('merma-responsable') },
+        { label: 'Sede', value: read('merma-sede') }
+    ].filter(item => item.value);
+}
+
+function mostrarConfirmacionEnvio(formId, resumen, seleccionados) {
+    const overlay = document.getElementById('confirm-overlay');
+    const title = document.getElementById('confirm-title');
+    const resumenEl = document.getElementById('confirm-resumen');
+    const productosEl = document.getElementById('confirm-productos');
+    const checkEl = document.getElementById('confirm-check');
+    const btnCancel = document.getElementById('confirm-btn-cancel');
+    const btnSend = document.getElementById('confirm-btn-send');
+
+    if (!overlay || !title || !resumenEl || !productosEl || !checkEl || !btnCancel || !btnSend) {
+        return Promise.resolve(true);
+    }
+
+    title.textContent = formId === 'empaquetados-form'
+        ? 'Confirmar envio de empaquetados'
+        : 'Confirmar envio de merma';
+
+    resumenEl.innerHTML = (resumen || []).map(item => (
+        `<div class="confirm-item"><span class="confirm-item-label">${escapeHtml(item.label)}</span><span class="confirm-item-value">${escapeHtml(item.value)}</span></div>`
+    )).join('');
+
+    productosEl.innerHTML = (seleccionados || []).map(item => {
+        const detalle = formId === 'merma-form'
+            ? (item.motivo ? item.motivo : '-')
+            : ((item.lote && String(item.lote).trim()) ? item.lote : '-');
+        const detalleLabel = formId === 'merma-form' ? 'Motivo' : 'Lote';
+        return `<div class="confirm-prod-row">
+            <span><strong>${escapeHtml(item.codigo || '')}</strong> - ${escapeHtml(item.descripcion || '')}</span>
+            <span>Cant: ${escapeHtml(item.cantidad || '')}</span>
+            <span>${detalleLabel}: ${escapeHtml(detalle)}</span>
+            <span>Lote: ${escapeHtml(item.lote || '-')}</span>
+        </div>`;
+    }).join('');
+
+    if (!productosEl.innerHTML) {
+        productosEl.innerHTML = '<div class="confirm-prod-row"><span>No hay productos seleccionados.</span></div>';
+    }
+
+    checkEl.checked = false;
+    btnSend.disabled = true;
+    overlay.style.display = 'flex';
+
+    return new Promise((resolve) => {
+        const onCheck = () => {
+            btnSend.disabled = !checkEl.checked;
+        };
+        const close = (result) => {
+            overlay.style.display = 'none';
+            checkEl.removeEventListener('change', onCheck);
+            btnCancel.removeEventListener('click', onCancel);
+            btnSend.removeEventListener('click', onSend);
+            resolve(result);
+        };
+        const onCancel = () => close(false);
+        const onSend = () => {
+            if (!checkEl.checked) return;
+            close(true);
+        };
+
+        checkEl.addEventListener('change', onCheck);
+        btnCancel.addEventListener('click', onCancel);
+        btnSend.addEventListener('click', onSend);
+    });
+}
+
 function enviarFormulario(formId, url) {
     const form = document.getElementById(formId);
-    form.addEventListener("submit", function(e) {
+    form.addEventListener("submit", async function(e) {
         e.preventDefault();
         if (!url) {
             document.getElementById("mensaje").textContent = "Configura la URL del Apps Script (WEB_APP_URL)";
@@ -236,6 +337,28 @@ function enviarFormulario(formId, url) {
             }
             return;
         }
+
+        if (form.dataset.confirmedSubmission !== '1') {
+            const resumen = obtenerResumenConfirmacion(formId, loteGlobal);
+            form.dataset.submitting = "0";
+            if (submitBtn) {
+                submitBtn.disabled = false;
+                submitBtn.textContent = "Enviar";
+            }
+            if (msgEl) msgEl.textContent = "";
+            const confirmado = await mostrarConfirmacionEnvio(formId, resumen, seleccionados);
+            if (!confirmado) {
+                return;
+            }
+            form.dataset.confirmedSubmission = '1';
+            form.requestSubmit();
+            return;
+        }
+
+        delete form.dataset.confirmedSubmission;
+        if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = "Enviando..."; }
+        if (msgEl) msgEl.textContent = "Enviando...";
+
         let backendSyncStatus = 'not-applicable';
 
         fetch(url, {

@@ -899,6 +899,149 @@ body.forms-screen #form-merma .btn-small:hover {
     border: 1px solid rgba(67, 230, 177, 0.22);
 }
 
+/* Confirmacion previa al envio */
+.confirm-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.46);
+    z-index: 220;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+}
+
+.confirm-panel {
+    width: min(760px, 96vw);
+    max-height: 92vh;
+    overflow: auto;
+    background: linear-gradient(180deg, #fffdfa 0%, #f8f3e9 100%);
+    border: 1px solid rgba(217, 200, 171, 0.95);
+    border-radius: 20px;
+    box-shadow:
+        0 1px 0 rgba(255, 255, 255, 0.82) inset,
+        0 18px 44px rgba(62, 42, 22, 0.22),
+        0 6px 14px rgba(0, 0, 0, 0.12);
+    padding: 18px 18px 16px;
+    color: var(--pdt-negro);
+}
+
+.confirm-panel h3 {
+    margin: 0 0 6px;
+    font-size: 1.3rem;
+    color: var(--pdt-negro);
+}
+
+.confirm-subtitle {
+    margin: 0 0 12px;
+    color: rgba(0, 0, 0, 0.72);
+    font-size: 0.95rem;
+}
+
+.confirm-resumen {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.confirm-item {
+    background: #ffffff;
+    border: 1px solid #e4d5ba;
+    border-radius: 10px;
+    padding: 8px 10px;
+}
+
+.confirm-item-label {
+    display: block;
+    font-size: 0.78rem;
+    color: #6d5037;
+    margin-bottom: 2px;
+    font-weight: 700;
+}
+
+.confirm-item-value {
+    display: block;
+    font-size: 0.95rem;
+    color: var(--pdt-negro);
+    font-weight: 600;
+}
+
+.confirm-productos-wrap {
+    background: #ffffff;
+    border: 1px solid #e4d5ba;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.confirm-productos-title {
+    background: #f3ead9;
+    color: #5a3219;
+    font-weight: 800;
+    padding: 9px 12px;
+    border-bottom: 1px solid #e4d5ba;
+    font-size: 0.92rem;
+}
+
+.confirm-productos {
+    max-height: 280px;
+    overflow: auto;
+}
+
+.confirm-prod-row {
+    display: grid;
+    grid-template-columns: 2fr 0.6fr 1fr 1fr;
+    gap: 8px;
+    padding: 9px 12px;
+    border-bottom: 1px solid #f0e4cf;
+    font-size: 0.9rem;
+    align-items: center;
+}
+
+.confirm-prod-row:last-child {
+    border-bottom: none;
+}
+
+.confirm-check-row {
+    margin-top: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.96rem;
+    font-weight: 700;
+    color: var(--pdt-negro);
+}
+
+.confirm-check-row input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+}
+
+.confirm-actions {
+    margin-top: 12px;
+    display: flex;
+    gap: 8px;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+}
+
+.confirm-actions button {
+    width: auto;
+    min-width: 138px;
+    margin-top: 0;
+}
+
+@media (max-width: 740px) {
+    .confirm-resumen {
+        grid-template-columns: 1fr;
+    }
+
+    .confirm-prod-row {
+        grid-template-columns: 1fr;
+        gap: 3px;
+    }
+}
+
 /* Pagina de Merma */
 #form-merma {
     background: linear-gradient(165deg, #181c2f 0%, #131a30 100%);
